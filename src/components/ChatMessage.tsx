@@ -1,8 +1,9 @@
 
-import { Bot, User, FileDown, Copy, Check } from 'lucide-react';
+import { Bot, User, FileDown, Copy, Check, Volume2, Edit3, Save, X } from 'lucide-react';
 import { Card } from '@/components/ui/card';
 import { Button } from '@/components/ui/button';
 import { Badge } from '@/components/ui/badge';
+import { Input } from '@/components/ui/input';
 import { useState } from 'react';
 
 interface Message {
@@ -12,15 +13,28 @@ interface Message {
   timestamp: Date;
   subject?: string;
   hasImage?: boolean;
+  isEdited?: boolean;
 }
 
 interface ChatMessageProps {
   message: Message;
   onGeneratePDF: (content: string) => void;
+  onSpeakText: (text: string) => void;
+  onEditMessage: (messageId: string, newContent: string) => void;
+  isEditing: boolean;
+  onStartEdit: (messageId: string) => void;
 }
 
-const ChatMessage = ({ message, onGeneratePDF }: ChatMessageProps) => {
+const ChatMessage = ({ 
+  message, 
+  onGeneratePDF, 
+  onSpeakText, 
+  onEditMessage, 
+  isEditing, 
+  onStartEdit 
+}: ChatMessageProps) => {
   const [isCopied, setIsCopied] = useState(false);
+  const [editContent, setEditContent] = useState(message.content);
 
   const handleCopy = async () => {
     await navigator.clipboard.writeText(message.content);
@@ -28,14 +42,64 @@ const ChatMessage = ({ message, onGeneratePDF }: ChatMessageProps) => {
     setTimeout(() => setIsCopied(false), 2000);
   };
 
+  const handleSaveEdit = () => {
+    onEditMessage(message.id, editContent);
+  };
+
+  const handleCancelEdit = () => {
+    setEditContent(message.content);
+    onStartEdit(''); // Cancel editing
+  };
+
   const isUser = message.type === 'user';
 
+  const formatMessageContent = (content: string) => {
+    // Enhanced formatting for better readability
+    const lines = content.split('\n');
+    return lines.map((line, index) => {
+      // Handle headings
+      if (line.startsWith('**') && line.endsWith('**')) {
+        return (
+          <div key={index} className="font-semibold text-gray-800 mt-3 mb-1">
+            {line.replace(/\*\*/g, '')}
+          </div>
+        );
+      }
+      
+      // Handle bullet points
+      if (line.startsWith('•') || line.startsWith('-')) {
+        return (
+          <div key={index} className="ml-4 mb-1">
+            {line}
+          </div>
+        );
+      }
+      
+      // Handle numbered lists
+      if (/^\d+\./.test(line)) {
+        return (
+          <div key={index} className="ml-4 mb-1 font-medium">
+            {line}
+          </div>
+        );
+      }
+      
+      // Regular content
+      return (
+        <div key={index} className="mb-1">
+          {line}
+          {index < lines.length - 1 && line.trim() && <br />}
+        </div>
+      );
+    });
+  };
+
   return (
-    <div className={`flex ${isUser ? 'justify-end' : 'justify-start'}`}>
-      <Card className={`max-w-[80%] p-4 ${
+    <div className={`flex ${isUser ? 'justify-end' : 'justify-start'} group`}>
+      <Card className={`max-w-[85%] p-4 transition-all duration-200 ${
         isUser 
-          ? 'bg-gradient-to-r from-blue-500 to-purple-600 text-white border-blue-300' 
-          : 'bg-white border-blue-200 shadow-sm'
+          ? 'bg-gradient-to-r from-blue-500 to-purple-600 text-white border-blue-300 shadow-md' 
+          : 'bg-white border-blue-200 shadow-sm hover:shadow-md'
       }`}>
         <div className="flex items-start space-x-3">
           <div className={`w-8 h-8 rounded-full flex items-center justify-center flex-shrink-0 ${
@@ -57,6 +121,11 @@ const ChatMessage = ({ message, onGeneratePDF }: ChatMessageProps) => {
               }`}>
                 {isUser ? 'You' : 'Albedo'}
               </span>
+              {message.isEdited && (
+                <Badge variant="secondary" className="text-xs bg-yellow-100 text-yellow-700">
+                  edited
+                </Badge>
+              )}
               {message.subject && !isUser && (
                 <Badge variant="secondary" className="text-xs bg-blue-100 text-blue-700">
                   {message.subject}
@@ -69,30 +138,63 @@ const ChatMessage = ({ message, onGeneratePDF }: ChatMessageProps) => {
               </span>
             </div>
             
-            <div className={`text-sm leading-relaxed ${
-              isUser ? 'text-white' : 'text-gray-800'
-            }`}>
-              {message.content.split('\n').map((line, index) => (
-                <div key={index}>
-                  {line}
-                  {index < message.content.split('\n').length - 1 && <br />}
+            {isEditing ? (
+              <div className="space-y-3">
+                <Input
+                  value={editContent}
+                  onChange={(e) => setEditContent(e.target.value)}
+                  className="w-full bg-white border-gray-200"
+                  placeholder="Edit your message..."
+                />
+                <div className="flex space-x-2">
+                  <Button
+                    variant="default"
+                    size="sm"
+                    onClick={handleSaveEdit}
+                    className="bg-green-600 hover:bg-green-700 text-white h-8"
+                  >
+                    <Save className="w-3 h-3 mr-1" />
+                    Save
+                  </Button>
+                  <Button
+                    variant="outline"
+                    size="sm"
+                    onClick={handleCancelEdit}
+                    className="h-8"
+                  >
+                    <X className="w-3 h-3 mr-1" />
+                    Cancel
+                  </Button>
                 </div>
-              ))}
-            </div>
+              </div>
+            ) : (
+              <div className={`text-sm leading-relaxed ${
+                isUser ? 'text-white' : 'text-gray-800'
+              }`}>
+                {formatMessageContent(message.content)}
+              </div>
+            )}
 
-            {message.hasImage && (
-              <div className="mt-2 p-2 bg-blue-50 rounded-lg">
-                <span className="text-xs text-blue-600">📷 Image attached</span>
+            {message.hasImage && !isEditing && (
+              <div className="mt-3 p-3 bg-blue-50 rounded-lg border border-blue-100">
+                <span className="text-sm text-blue-600 font-medium">📷 Images uploaded and analyzed</span>
               </div>
             )}
             
-            {!isUser && (
-              <div className="flex items-center space-x-2 mt-3 pt-2 border-t border-gray-100">
+            {!isEditing && (
+              <div className={`flex items-center space-x-2 mt-4 pt-3 border-t ${
+                isUser ? 'border-white/20' : 'border-gray-100'
+              } opacity-0 group-hover:opacity-100 transition-opacity duration-200`}>
                 <Button
                   variant="ghost"
                   size="sm"
                   onClick={handleCopy}
-                  className="text-gray-600 hover:text-gray-800 h-8"
+                  className={`h-8 ${
+                    isUser 
+                      ? 'text-white/80 hover:text-white hover:bg-white/10' 
+                      : 'text-gray-600 hover:text-gray-800'
+                  }`}
+                  title="Copy message"
                 >
                   {isCopied ? (
                     <Check className="w-3 h-3 mr-1" />
@@ -102,15 +204,44 @@ const ChatMessage = ({ message, onGeneratePDF }: ChatMessageProps) => {
                   {isCopied ? 'Copied!' : 'Copy'}
                 </Button>
                 
-                <Button
-                  variant="ghost"
-                  size="sm"
-                  onClick={() => onGeneratePDF(message.content)}
-                  className="text-gray-600 hover:text-gray-800 h-8"
-                >
-                  <FileDown className="w-3 h-3 mr-1" />
-                  PDF
-                </Button>
+                {!isUser && (
+                  <>
+                    <Button
+                      variant="ghost"
+                      size="sm"
+                      onClick={() => onSpeakText(message.content)}
+                      className="text-gray-600 hover:text-gray-800 h-8"
+                      title="Read aloud"
+                    >
+                      <Volume2 className="w-3 h-3 mr-1" />
+                      Listen
+                    </Button>
+                    
+                    <Button
+                      variant="ghost"
+                      size="sm"
+                      onClick={() => onGeneratePDF(message.content)}
+                      className="text-gray-600 hover:text-gray-800 h-8"
+                      title="Download as PDF"
+                    >
+                      <FileDown className="w-3 h-3 mr-1" />
+                      PDF
+                    </Button>
+                  </>
+                )}
+                
+                {isUser && (
+                  <Button
+                    variant="ghost"
+                    size="sm"
+                    onClick={() => onStartEdit(message.id)}
+                    className="text-white/80 hover:text-white hover:bg-white/10 h-8"
+                    title="Edit message"
+                  >
+                    <Edit3 className="w-3 h-3 mr-1" />
+                    Edit
+                  </Button>
+                )}
               </div>
             )}
           </div>
