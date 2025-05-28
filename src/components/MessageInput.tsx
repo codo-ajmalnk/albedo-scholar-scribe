@@ -53,13 +53,13 @@ const MessageInput = ({
           size="icon"
           onClick={() => fileInputRef.current?.click()}
           className="border-blue-200 hover:bg-blue-50 flex-shrink-0"
-          title="Upload images"
+          title="Upload question screenshots"
         >
           <Upload className="w-4 h-4" />
         </Button>
         
         <Input
-          placeholder="Ask me anything about your studies! 📚 (You can edit messages later)"
+          placeholder="Ask me about your studies! 📚 (Upload screenshots of questions or type directly)"
           value={inputMessage}
           onChange={(e) => setInputMessage(e.target.value)}
           onKeyPress={(e) => e.key === 'Enter' && !e.shiftKey && onSendMessage()}
@@ -86,7 +86,7 @@ const MessageInput = ({
       />
       
       <div className="mt-2 text-xs text-gray-500 text-center">
-        💡 Tip: You can edit any message by clicking the edit icon, upload multiple images, and download responses as PDF!
+        💡 Tip: Upload screenshots of questions from textbooks or exams! I can read and solve them for any grade level.
       </div>
     </Card>
   );

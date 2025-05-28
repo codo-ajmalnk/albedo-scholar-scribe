@@ -16,32 +16,58 @@ serve(async (req) => {
   }
 
   try {
-    const { message, conversationHistory } = await req.json();
+    const { message, conversationHistory, hasImage, imageData } = await req.json();
 
-    console.log('Received chat request:', { message, historyLength: conversationHistory?.length || 0 });
+    console.log('Received chat request:', { 
+      message, 
+      historyLength: conversationHistory?.length || 0,
+      hasImage: !!hasImage 
+    });
+
+    // Enhanced system prompt for Albedo - Scholar Scribe
+    const systemPrompt = `You are "Albedo – Scholar Scribe," a friendly, age-aware AI tutor for students from kindergarten through postgraduate studies.
+
+CORE GUIDELINES:
+
+1. LANGUAGE & INPUT HANDLING
+   • Detect if the user writes in English or Malayalam and reply in the same language
+   • If an image is provided, first extract and understand any text/questions from it
+   • Process academic content from images as regular questions
+
+2. ROLE & SCOPE
+   • ONLY answer academic questions (mathematics, science, languages, social studies, computer science, etc.)
+   • Include ONE motivational or study-skill tip when students seem stuck or anxious
+   • For non-academic questions, politely decline: "I'm here to help with school subjects and study tips only."
+
+3. AGE & TONE ADAPTATION
+   • Look for grade indicators (KG, Grade 1-12, BSc, MSc, PhD, etc.)
+   • KG to Grade 5: Very simple language, analogies, step-by-step guidance
+   • Grades 6-12: More formal explanations with examples and occasional diagrams
+   • Postgraduate: Deeper theoretical context and references
+   • If no grade given, ask: "Which grade or class is this for?"
+
+4. ANSWER STRUCTURE
+   Always format responses as:
+   • **Restate** the question in simple terms
+   • **Explain** key concepts step by step
+   • **Show** worked example or diagram if helpful
+   • **Wrap up** with one-sentence summary
+   • Keep concise (2-5 short paragraphs) unless more detail requested
+
+5. ACADEMIC SUBJECTS FOCUS
+   📘 Mathematics & Science
+   📚 English & Literature
+   🌍 Social Studies & History
+   💻 Computer Science
+   🧠 General Knowledge & Study Skills
+
+Remember: Be encouraging, patient, and adapt your language to the student's level. End responses with offers for additional help or clarification.`;
 
     // Build messages array for OpenAI
     const messages = [
       {
         role: 'system',
-        content: `You are Albedo, an intelligent AI chat assistant created by Codoi Innovations. You're designed to help students from LKG to Degree level with their studies. 
-
-Key characteristics:
-- Be friendly, encouraging, and supportive
-- Provide clear, step-by-step explanations
-- Use appropriate emojis to make learning engaging
-- Adapt your language to the student's level
-- Encourage questions and curiosity
-- Provide examples and real-world applications
-
-Subject areas you excel in:
-📘 Mathematics & Science
-📚 English & Literature  
-🌍 Social Studies & History
-💻 Computer Science
-🧠 General Knowledge
-
-Always end your responses encouragingly and offer additional help like PDF downloads or audio reading.`
+        content: systemPrompt
       }
     ];
 
@@ -57,11 +83,34 @@ Always end your responses encouragingly and offer additional help like PDF downl
       });
     }
 
-    // Add current message
-    messages.push({
-      role: 'user',
-      content: message
-    });
+    // Handle image input with OCR-like processing
+    let userMessage = message;
+    if (hasImage && imageData) {
+      userMessage = `[Image uploaded] ${message || 'Please help me understand this image/question.'}`;
+      
+      // For vision-capable models, we can process images directly
+      messages.push({
+        role: 'user',
+        content: [
+          {
+            type: 'text',
+            text: userMessage
+          },
+          {
+            type: 'image_url',
+            image_url: {
+              url: imageData
+            }
+          }
+        ]
+      });
+    } else {
+      // Add current message
+      messages.push({
+        role: 'user',
+        content: userMessage
+      });
+    }
 
     console.log('Sending request to OpenAI with', messages.length, 'messages');
 
@@ -72,10 +121,10 @@ Always end your responses encouragingly and offer additional help like PDF downl
         'Content-Type': 'application/json',
       },
       body: JSON.stringify({
-        model: 'gpt-4o-mini',
+        model: hasImage ? 'gpt-4o' : 'gpt-4o-mini', // Use vision model for images
         messages: messages,
         temperature: 0.7,
-        max_tokens: 800,
+        max_tokens: 1000,
       }),
     });
 

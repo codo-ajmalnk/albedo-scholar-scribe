@@ -38,14 +38,42 @@ export const useMessageHandling = () => {
     return 'General';
   };
 
-  const getAIResponse = async (userMessage: string, conversationHistory: Message[]): Promise<string> => {
+  const convertImageToBase64 = (file: File): Promise<string> => {
+    return new Promise((resolve, reject) => {
+      const reader = new FileReader();
+      reader.onload = () => {
+        const result = reader.result as string;
+        resolve(result);
+      };
+      reader.onerror = reject;
+      reader.readAsDataURL(file);
+    });
+  };
+
+  const getAIResponse = async (userMessage: string, conversationHistory: Message[], uploadedFiles?: File[]): Promise<string> => {
     try {
-      console.log('Calling OpenAI API via Supabase function...');
+      console.log('Calling Albedo AI via Supabase function...');
       
+      let imageData = null;
+      let hasImage = false;
+
+      // Handle image upload
+      if (uploadedFiles && uploadedFiles.length > 0) {
+        try {
+          imageData = await convertImageToBase64(uploadedFiles[0]);
+          hasImage = true;
+          console.log('Image converted to base64 for processing');
+        } catch (error) {
+          console.error('Error converting image:', error);
+        }
+      }
+
       const { data, error } = await supabase.functions.invoke('chat-ai', {
         body: {
           message: userMessage,
-          conversationHistory: conversationHistory
+          conversationHistory: conversationHistory,
+          hasImage,
+          imageData
         }
       });
 
@@ -62,22 +90,24 @@ export const useMessageHandling = () => {
     } catch (error) {
       console.error('Error getting AI response:', error);
       
-      // Fallback response
-      return `I apologize, but I'm having trouble connecting to my AI brain right now! 🤖💭 
+      // Enhanced fallback response for Albedo
+      return `I apologize, but I'm having trouble connecting to my knowledge base right now! 🤖📚
 
-This might be a temporary issue. Here's what I can suggest:
+This might be a temporary issue. Here's what you can try:
 • Check your internet connection
 • Try your question again in a moment
 • Make sure the OpenAI API key is properly configured
 
-In the meantime, feel free to try rephrasing your question or ask something else! I'm here to help with:
+**Study Tip:** While we wait, remember that breaking big problems into smaller steps always helps! ✨
+
+I'm here to help with:
 📘 Mathematics & Science
 📚 English & Literature  
 🌍 Social Studies & History
 💻 Computer Science
-🧠 General Knowledge
+🧠 General Knowledge & Study Skills
 
-Would you like to try asking your question again? ✨`;
+Which grade or class is this for? Once I'm back online, I'll provide age-appropriate explanations! 🎯`;
     }
   };
 
@@ -87,7 +117,7 @@ Would you like to try asking your question again? ✨`;
     const userMessage: Message = {
       id: Date.now().toString(),
       type: 'user',
-      content: inputMessage || `Uploaded ${uploadedFiles.length} file(s)`,
+      content: inputMessage || `Uploaded ${uploadedFiles.length} image(s) for analysis`,
       timestamp: new Date(),
       hasImage: uploadedFiles.length > 0
     };
@@ -96,7 +126,7 @@ Would you like to try asking your question again? ✨`;
     setIsLoading(true);
 
     try {
-      const aiResponseContent = await getAIResponse(inputMessage, messages);
+      const aiResponseContent = await getAIResponse(inputMessage, messages, uploadedFiles);
       const subject = detectSubject(inputMessage);
       
       const aiResponse: Message = {
