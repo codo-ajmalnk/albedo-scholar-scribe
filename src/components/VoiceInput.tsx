@@ -15,9 +15,11 @@ const VoiceInput = ({ onVoiceInput, disabled = false }: VoiceInputProps) => {
   const { toast } = useToast();
 
   useEffect(() => {
-    if ('webkitSpeechRecognition' in window || 'SpeechRecognition' in window) {
-      const SpeechRecognition = window.SpeechRecognition || window.webkitSpeechRecognition;
-      const recognitionInstance = new SpeechRecognition();
+    // Check if speech recognition is available
+    const SpeechRecognitionAPI = (window as any).SpeechRecognition || (window as any).webkitSpeechRecognition;
+    
+    if (SpeechRecognitionAPI) {
+      const recognitionInstance = new SpeechRecognitionAPI() as SpeechRecognition;
       
       recognitionInstance.continuous = false;
       recognitionInstance.interimResults = false;
