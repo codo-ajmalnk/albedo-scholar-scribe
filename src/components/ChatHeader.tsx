@@ -2,14 +2,14 @@
 import React from 'react';
 import { Button } from '@/components/ui/button';
 import UserMenu from './UserMenu';
-import { useMediaQuery } from '@/hooks/use-mobile';
+import { useIsMobile } from '@/hooks/use-mobile';
 
 interface ChatHeaderProps {
   messageCount: number;
 }
 
 const ChatHeader: React.FC<ChatHeaderProps> = ({ messageCount }) => {
-  const isMobile = useMediaQuery('(max-width: 1024px)');
+  const isMobile = useIsMobile();
 
   return (
     <header className="border-b bg-white shadow-sm">
