@@ -1,30 +1,38 @@
 
-import AlbedoAvatar from './AlbedoAvatar';
+import React from 'react';
+import { Button } from '@/components/ui/button';
+import UserMenu from './UserMenu';
+import { useMediaQuery } from '@/hooks/use-mobile';
 
 interface ChatHeaderProps {
   messageCount: number;
 }
 
-const ChatHeader = ({ messageCount }: ChatHeaderProps) => {
+const ChatHeader: React.FC<ChatHeaderProps> = ({ messageCount }) => {
+  const isMobile = useMediaQuery('(max-width: 1024px)');
+
   return (
-    <div className="bg-white/95 backdrop-blur-md border-b border-green-100 sticky top-0 z-10 shadow-sm">
-      <div className="max-w-4xl mx-auto px-4 py-4">
-        <div className="flex items-center justify-between">
-          <div className="flex items-center space-x-3">
-            <AlbedoAvatar size="lg" />
-            <div>
-              <h1 className="text-xl font-bold bg-gradient-to-r from-green-600 to-blue-600 bg-clip-text text-transparent">
-                Albedo Educator
-              </h1>
-              <p className="text-sm text-gray-600">Your friendly AI learning companion 🎓✨</p>
-            </div>
+    <header className="border-b bg-white shadow-sm">
+      <div className="container mx-auto px-4 py-3 flex items-center justify-between">
+        {!isMobile && (
+          <div className="flex-1">
+            <h1 className="font-semibold text-lg text-gray-800 ml-2">Albedo AI</h1>
           </div>
-          <div className="text-xs text-gray-500">
-            {messageCount > 0 && `${messageCount} messages`}
-          </div>
+        )}
+        
+        <div className="flex-1 flex justify-center">
+          {messageCount > 0 && (
+            <span className="text-sm text-gray-500">
+              {messageCount} message{messageCount !== 1 ? 's' : ''}
+            </span>
+          )}
+        </div>
+        
+        <div className="flex-1 flex justify-end">
+          <UserMenu />
         </div>
       </div>
-    </div>
+    </header>
   );
 };
 

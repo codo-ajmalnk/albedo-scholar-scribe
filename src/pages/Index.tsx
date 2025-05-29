@@ -7,9 +7,11 @@ import MessageInput from '@/components/MessageInput';
 import { useMessageHandling } from '@/hooks/useMessageHandling';
 import { useFileHandling } from '@/hooks/useFileHandling';
 import { useChatHistory } from '@/hooks/useChatHistory';
+import { useAuth } from '@/hooks/useAuth';
 
 const Index = () => {
   const [inputMessage, setInputMessage] = useState('');
+  const { user } = useAuth();
   
   const {
     messages,
@@ -82,6 +84,8 @@ const Index = () => {
     setCurrentChatId(chatId);
   };
 
+  if (!user) return null;
+
   return (
     <div className="min-h-screen bg-gradient-to-br from-green-50 via-blue-50 to-purple-50 flex">
       <ChatSidebar
@@ -92,7 +96,7 @@ const Index = () => {
         onDeleteChat={deleteChat}
       />
       
-      <div className="flex-1 flex flex-col md:ml-0">
+      <div className="flex-1 flex flex-col w-full">
         <ChatHeader messageCount={messages.length} />
         
         <div className="max-w-4xl mx-auto px-4 py-6 h-[calc(100vh-140px)] flex flex-col w-full">
