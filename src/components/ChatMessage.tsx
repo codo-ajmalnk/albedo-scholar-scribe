@@ -1,10 +1,11 @@
 
-import { Bot, User, FileDown, Copy, Check, Volume2, Edit3, Save, X } from 'lucide-react';
+import { User, FileDown, Copy, Check, Volume2, Edit3, Save, X } from 'lucide-react';
 import { Card } from '@/components/ui/card';
 import { Button } from '@/components/ui/button';
 import { Badge } from '@/components/ui/badge';
 import { Input } from '@/components/ui/input';
 import { useState } from 'react';
+import AlbedoAvatar from './AlbedoAvatar';
 
 interface Message {
   id: string;
@@ -48,16 +49,14 @@ const ChatMessage = ({
 
   const handleCancelEdit = () => {
     setEditContent(message.content);
-    onStartEdit(''); // Cancel editing
+    onStartEdit('');
   };
 
   const isUser = message.type === 'user';
 
   const formatMessageContent = (content: string) => {
-    // Enhanced formatting for better readability
     const lines = content.split('\n');
     return lines.map((line, index) => {
-      // Handle headings
       if (line.startsWith('**') && line.endsWith('**')) {
         return (
           <div key={index} className="font-semibold text-gray-800 mt-3 mb-1">
@@ -66,7 +65,6 @@ const ChatMessage = ({
         );
       }
       
-      // Handle bullet points
       if (line.startsWith('•') || line.startsWith('-')) {
         return (
           <div key={index} className="ml-4 mb-1">
@@ -75,7 +73,6 @@ const ChatMessage = ({
         );
       }
       
-      // Handle numbered lists
       if (/^\d+\./.test(line)) {
         return (
           <div key={index} className="ml-4 mb-1 font-medium">
@@ -84,7 +81,6 @@ const ChatMessage = ({
         );
       }
       
-      // Regular content
       return (
         <div key={index} className="mb-1">
           {line}
@@ -95,31 +91,29 @@ const ChatMessage = ({
   };
 
   return (
-    <div className={`flex ${isUser ? 'justify-end' : 'justify-start'} group`}>
-      <Card className={`max-w-[85%] p-4 transition-all duration-200 ${
+    <div className={`flex ${isUser ? 'justify-end' : 'justify-start'} group mb-4`}>
+      <Card className={`max-w-[85%] p-4 transition-all duration-300 animate-fade-in ${
         isUser 
-          ? 'bg-gradient-to-r from-blue-500 to-purple-600 text-white border-blue-300 shadow-md' 
-          : 'bg-white border-blue-200 shadow-sm hover:shadow-md'
+          ? 'bg-gradient-to-r from-blue-500 to-purple-600 text-white border-blue-300 shadow-md rounded-2xl rounded-br-md' 
+          : 'bg-white border-green-200 shadow-sm hover:shadow-md rounded-2xl rounded-bl-md'
       }`}>
         <div className="flex items-start space-x-3">
-          <div className={`w-8 h-8 rounded-full flex items-center justify-center flex-shrink-0 ${
-            isUser 
-              ? 'bg-white/20' 
-              : 'bg-gradient-to-r from-blue-500 to-purple-600'
-          }`}>
+          <div className={`flex-shrink-0 ${isUser ? '' : ''}`}>
             {isUser ? (
-              <User className={`w-4 h-4 ${isUser ? 'text-white' : 'text-blue-600'}`} />
+              <div className="w-8 h-8 bg-white/20 rounded-full flex items-center justify-center">
+                <User className="w-4 h-4 text-white" />
+              </div>
             ) : (
-              <Bot className="w-4 h-4 text-white" />
+              <AlbedoAvatar size="sm" />
             )}
           </div>
           
           <div className="flex-1 min-w-0">
             <div className="flex items-center space-x-2 mb-2">
               <span className={`text-sm font-medium ${
-                isUser ? 'text-white/90' : 'text-gray-700'
+                isUser ? 'text-white/90' : 'text-green-700'
               }`}>
-                {isUser ? 'You' : 'Albedo'}
+                {isUser ? 'You' : 'Albedo Educator'}
               </span>
               {message.isEdited && (
                 <Badge variant="secondary" className="text-xs bg-yellow-100 text-yellow-700">
@@ -127,7 +121,7 @@ const ChatMessage = ({
                 </Badge>
               )}
               {message.subject && !isUser && (
-                <Badge variant="secondary" className="text-xs bg-blue-100 text-blue-700">
+                <Badge variant="secondary" className="text-xs bg-green-100 text-green-700">
                   {message.subject}
                 </Badge>
               )}
@@ -176,8 +170,8 @@ const ChatMessage = ({
             )}
 
             {message.hasImage && !isEditing && (
-              <div className="mt-3 p-3 bg-blue-50 rounded-lg border border-blue-100">
-                <span className="text-sm text-blue-600 font-medium">📷 Images uploaded and analyzed</span>
+              <div className="mt-3 p-3 bg-green-50 rounded-lg border border-green-100">
+                <span className="text-sm text-green-600 font-medium">📷 Files uploaded and analyzed</span>
               </div>
             )}
             

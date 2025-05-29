@@ -1,10 +1,9 @@
 
 import { useRef, useEffect } from 'react';
-import { Bot } from 'lucide-react';
 import { ScrollArea } from '@/components/ui/scroll-area';
-import { Card } from '@/components/ui/card';
 import ChatMessage from '@/components/ChatMessage';
 import WelcomeScreen from '@/components/WelcomeScreen';
+import TypingIndicator from '@/components/TypingIndicator';
 import { Message } from '@/hooks/useMessageHandling';
 
 interface ChatContainerProps {
@@ -34,14 +33,14 @@ const ChatContainer = ({
 
   useEffect(() => {
     scrollToBottom();
-  }, [messages]);
+  }, [messages, isLoading]);
 
   return (
     <ScrollArea className="flex-1 mb-4">
       {messages.length === 0 ? (
         <WelcomeScreen />
       ) : (
-        <div className="space-y-4">
+        <div className="space-y-2 p-2">
           {messages.map((message) => (
             <ChatMessage 
               key={message.id} 
@@ -53,21 +52,7 @@ const ChatContainer = ({
               onStartEdit={onStartEdit}
             />
           ))}
-          {isLoading && (
-            <div className="flex justify-start">
-              <Card className="max-w-xs p-4 bg-gradient-to-r from-blue-50 to-purple-50 border-blue-200 shadow-sm">
-                <div className="flex items-center space-x-3">
-                  <Bot className="w-5 h-5 text-blue-600" />
-                  <span className="text-sm text-blue-700">Albedo is thinking...</span>
-                  <div className="flex space-x-1">
-                    <div className="w-2 h-2 bg-blue-400 rounded-full animate-bounce"></div>
-                    <div className="w-2 h-2 bg-blue-400 rounded-full animate-bounce" style={{ animationDelay: '0.1s' }}></div>
-                    <div className="w-2 h-2 bg-blue-400 rounded-full animate-bounce" style={{ animationDelay: '0.2s' }}></div>
-                  </div>
-                </div>
-              </Card>
-            </div>
-          )}
+          {isLoading && <TypingIndicator />}
           <div ref={messagesEndRef} />
         </div>
       )}
