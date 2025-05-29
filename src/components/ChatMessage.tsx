@@ -1,5 +1,4 @@
-
-import { User, FileDown, Copy, Check, Volume2, Edit3, Save, X } from 'lucide-react';
+import { User, FileDown, Copy, Check, Volume2, Edit3, Save, X, RefreshCcw, ThumbsUp, ThumbsDown } from 'lucide-react';
 import { Card } from '@/components/ui/card';
 import { Button } from '@/components/ui/button';
 import { Badge } from '@/components/ui/badge';
@@ -15,6 +14,7 @@ interface Message {
   subject?: string;
   hasImage?: boolean;
   isEdited?: boolean;
+  feedback?: 'like' | 'dislike' | null;
 }
 
 interface ChatMessageProps {
@@ -22,6 +22,8 @@ interface ChatMessageProps {
   onGeneratePDF: (content: string) => void;
   onSpeakText: (text: string) => void;
   onEditMessage: (messageId: string, newContent: string) => void;
+  onRegenerateResponse: (messageId: string) => void;
+  onFeedback: (messageId: string, feedback: 'like' | 'dislike') => void;
   isEditing: boolean;
   onStartEdit: (messageId: string) => void;
 }
@@ -30,7 +32,9 @@ const ChatMessage = ({
   message, 
   onGeneratePDF, 
   onSpeakText, 
-  onEditMessage, 
+  onEditMessage,
+  onRegenerateResponse,
+  onFeedback,
   isEditing, 
   onStartEdit 
 }: ChatMessageProps) => {
@@ -221,6 +225,46 @@ const ChatMessage = ({
                       <FileDown className="w-3 h-3 mr-1" />
                       PDF
                     </Button>
+
+                    <Button
+                      variant="ghost"
+                      size="sm"
+                      onClick={() => onRegenerateResponse(message.id)}
+                      className="text-gray-600 hover:text-gray-800 h-8"
+                      title="Regenerate response"
+                    >
+                      <RefreshCcw className="w-3 h-3 mr-1" />
+                      Regenerate
+                    </Button>
+
+                    <div className="flex space-x-1">
+                      <Button
+                        variant="ghost"
+                        size="sm"
+                        onClick={() => onFeedback(message.id, 'like')}
+                        className={`h-8 ${
+                          message.feedback === 'like' 
+                            ? 'text-green-600 bg-green-50' 
+                            : 'text-gray-600 hover:text-green-600'
+                        }`}
+                        title="Like response"
+                      >
+                        <ThumbsUp className="w-3 h-3" />
+                      </Button>
+                      <Button
+                        variant="ghost"
+                        size="sm"
+                        onClick={() => onFeedback(message.id, 'dislike')}
+                        className={`h-8 ${
+                          message.feedback === 'dislike' 
+                            ? 'text-red-600 bg-red-50' 
+                            : 'text-gray-600 hover:text-red-600'
+                        }`}
+                        title="Dislike response"
+                      >
+                        <ThumbsDown className="w-3 h-3" />
+                      </Button>
+                    </div>
                   </>
                 )}
                 

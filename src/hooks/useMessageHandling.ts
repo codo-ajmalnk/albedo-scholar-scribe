@@ -11,6 +11,7 @@ export interface Message {
   subject?: string;
   hasImage?: boolean;
   isEdited?: boolean;
+  feedback?: 'like' | 'dislike' | null;
 }
 
 export const useMessageHandling = () => {
@@ -151,6 +152,7 @@ Which grade or class is this for? Once I'm back online, I'll provide age-appropr
   };
 
   const editMessage = async (messageId: string, newContent: string) => {
+    // Update the user message
     setMessages(prev => prev.map(msg => 
       msg.id === messageId 
         ? { ...msg, content: newContent, isEdited: true }
@@ -159,9 +161,13 @@ Which grade or class is this for? Once I'm back online, I'll provide age-appropr
     
     const editedMessage = messages.find(msg => msg.id === messageId);
     if (editedMessage?.type === 'user') {
+      // Remove all messages after the edited message
+      const messageIndex = messages.findIndex(msg => msg.id === messageId);
+      setMessages(prev => prev.slice(0, messageIndex + 1));
+      
       setIsLoading(true);
       try {
-        const aiResponseContent = await getAIResponse(newContent, messages);
+        const aiResponseContent = await getAIResponse(newContent, messages.slice(0, messageIndex));
         const subject = detectSubject(newContent);
         
         const aiResponse: Message = {
@@ -192,12 +198,67 @@ Which grade or class is this for? Once I'm back online, I'll provide age-appropr
     });
   };
 
+  const regenerateResponse = async (messageId: string) => {
+    const messageIndex = messages.findIndex(msg => msg.id === messageId);
+    if (messageIndex === -1 || messages[messageIndex].type !== 'assistant') return;
+    
+    // Find the user message that prompted this response
+    const userMessageIndex = messageIndex - 1;
+    if (userMessageIndex < 0 || messages[userMessageIndex].type !== 'user') return;
+    
+    const userMessage = messages[userMessageIndex];
+    const conversationHistory = messages.slice(0, userMessageIndex);
+    
+    setIsLoading(true);
+    try {
+      const aiResponseContent = await getAIResponse(userMessage.content, conversationHistory);
+      const subject = detectSubject(userMessage.content);
+      
+      const newResponse: Message = {
+        id: Date.now().toString(),
+        type: 'assistant',
+        content: aiResponseContent,
+        timestamp: new Date(),
+        subject
+      };
+      
+      // Replace the old response with the new one
+      setMessages(prev => prev.map(msg => 
+        msg.id === messageId ? newResponse : msg
+      ));
+    } catch (error) {
+      console.error('Error in regenerateResponse:', error);
+      toast({
+        title: "Error",
+        description: "Failed to regenerate response. Please try again.",
+        variant: "destructive"
+      });
+    } finally {
+      setIsLoading(false);
+    }
+  };
+
+  const setMessageFeedback = (messageId: string, feedback: 'like' | 'dislike') => {
+    setMessages(prev => prev.map(msg => 
+      msg.id === messageId 
+        ? { ...msg, feedback: msg.feedback === feedback ? null : feedback }
+        : msg
+    ));
+  };
+
+  const loadMessages = (newMessages: Message[]) => {
+    setMessages(newMessages);
+  };
+
   return {
     messages,
     isLoading,
     editingMessageId,
     setEditingMessageId,
     sendMessage,
-    editMessage
+    editMessage,
+    regenerateResponse,
+    setMessageFeedback,
+    loadMessages
   };
 };

@@ -13,6 +13,8 @@ interface ChatContainerProps {
   onGeneratePDF: (content: string) => void;
   onSpeakText: (text: string) => void;
   onEditMessage: (messageId: string, newContent: string) => void;
+  onRegenerateResponse: (messageId: string) => void;
+  onFeedback: (messageId: string, feedback: 'like' | 'dislike') => void;
   onStartEdit: (messageId: string) => void;
 }
 
@@ -23,6 +25,8 @@ const ChatContainer = ({
   onGeneratePDF,
   onSpeakText,
   onEditMessage,
+  onRegenerateResponse,
+  onFeedback,
   onStartEdit
 }: ChatContainerProps) => {
   const messagesEndRef = useRef<HTMLDivElement>(null);
@@ -48,6 +52,8 @@ const ChatContainer = ({
               onGeneratePDF={onGeneratePDF}
               onSpeakText={onSpeakText}
               onEditMessage={onEditMessage}
+              onRegenerateResponse={onRegenerateResponse}
+              onFeedback={onFeedback}
               isEditing={editingMessageId === message.id}
               onStartEdit={onStartEdit}
             />
