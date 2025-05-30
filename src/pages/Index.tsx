@@ -5,6 +5,7 @@ import ChatContainer from '@/components/ChatContainer';
 import ChatSidebar from '@/components/ChatSidebar';
 import MessageInput from '@/components/MessageInput';
 import FlyingLeavesEffect from '@/components/FlyingLeavesEffect';
+import { AdminProvider } from '@/components/AdminProvider';
 import { useMessageHandling } from '@/hooks/useMessageHandling';
 import { useFileHandling } from '@/hooks/useFileHandling';
 import { useChatHistory } from '@/hooks/useChatHistory';
@@ -101,49 +102,51 @@ const Index = () => {
   if (!user) return null;
 
   return (
-    <div className="min-h-screen bg-gradient-to-br from-green-50 via-blue-50 to-purple-50 flex">
-      <ChatSidebar
-        chatSessions={chatSessions}
-        currentChatId={currentChatId}
-        onNewChat={handleNewChat}
-        onSelectChat={handleSelectChat}
-        onDeleteChat={deleteChat}
-      />
-      
-      <div className="flex-1 flex flex-col w-full">
-        <ChatHeader messageCount={messages.length} />
+    <AdminProvider>
+      <div className="min-h-screen bg-gradient-to-br from-green-50 via-blue-50 to-purple-50 flex">
+        <ChatSidebar
+          chatSessions={chatSessions}
+          currentChatId={currentChatId}
+          onNewChat={handleNewChat}
+          onSelectChat={handleSelectChat}
+          onDeleteChat={deleteChat}
+        />
         
-        <div className="max-w-4xl mx-auto px-4 py-6 h-[calc(100vh-140px)] flex flex-col w-full">
-          <ChatContainer
-            messages={messages}
-            isLoading={isLoading}
-            editingMessageId={editingMessageId}
-            onGeneratePDF={generatePDF}
-            onSpeakText={speakText}
-            onEditMessage={handleEditMessage}
-            onRegenerateResponse={regenerateResponse}
-            onFeedback={setMessageFeedback}
-            onStartEdit={setEditingMessageId}
-          />
+        <div className="flex-1 flex flex-col w-full">
+          <ChatHeader messageCount={messages.length} />
+          
+          <div className="max-w-4xl mx-auto px-4 py-6 h-[calc(100vh-140px)] flex flex-col w-full">
+            <ChatContainer
+              messages={messages}
+              isLoading={isLoading}
+              editingMessageId={editingMessageId}
+              onGeneratePDF={generatePDF}
+              onSpeakText={speakText}
+              onEditMessage={handleEditMessage}
+              onRegenerateResponse={regenerateResponse}
+              onFeedback={setMessageFeedback}
+              onStartEdit={setEditingMessageId}
+            />
 
-          <MessageInput
-            inputMessage={inputMessage}
-            setInputMessage={setInputMessage}
-            uploadedFiles={uploadedFiles}
-            setUploadedFiles={setUploadedFiles}
-            onSendMessage={handleSendMessage}
-            isLoading={isLoading}
-            onFileUpload={handleFileUpload}
-          />
+            <MessageInput
+              inputMessage={inputMessage}
+              setInputMessage={setInputMessage}
+              uploadedFiles={uploadedFiles}
+              setUploadedFiles={setUploadedFiles}
+              onSendMessage={handleSendMessage}
+              isLoading={isLoading}
+              onFileUpload={handleFileUpload}
+            />
+          </div>
         </div>
-      </div>
 
-      <FlyingLeavesEffect
-        isActive={isLeavesEffectActive}
-        onComplete={handleLeavesEffectComplete}
-        messages={previousMessages}
-      />
-    </div>
+        <FlyingLeavesEffect
+          isActive={isLeavesEffectActive}
+          onComplete={handleLeavesEffectComplete}
+          messages={previousMessages}
+        />
+      </div>
+    </AdminProvider>
   );
 };
 

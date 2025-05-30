@@ -6,7 +6,7 @@ interface AdminContextType {
   setIsAdmin: (value: boolean) => void;
 }
 
-const AdminContext = createContext<AdminContextType | undefined>(undefined);
+export const AdminContext = createContext<AdminContextType | undefined>(undefined);
 
 export const useAdmin = () => {
   const context = useContext(AdminContext);

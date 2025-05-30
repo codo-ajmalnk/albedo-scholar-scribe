@@ -7,6 +7,7 @@ import { Settings } from 'lucide-react';
 import UserMenu from './UserMenu';
 import { useIsMobile } from '@/hooks/use-mobile';
 import { useToast } from '@/hooks/use-toast';
+import { useAdmin } from '@/hooks/useAdmin';
 
 interface ChatHeaderProps {
   messageCount: number;
@@ -15,8 +16,8 @@ interface ChatHeaderProps {
 const ChatHeader: React.FC<ChatHeaderProps> = ({ messageCount }) => {
   const isMobile = useIsMobile();
   const { toast } = useToast();
+  const { isAdmin, setIsAdmin } = useAdmin();
   const [password, setPassword] = useState('');
-  const [isAdmin, setIsAdmin] = useState(false);
   const [isDialogOpen, setIsDialogOpen] = useState(false);
 
   const handleAdminLogin = () => {
