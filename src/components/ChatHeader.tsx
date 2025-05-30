@@ -1,8 +1,12 @@
 
-import React from 'react';
+import React, { useState } from 'react';
 import { Button } from '@/components/ui/button';
+import { Input } from '@/components/ui/input';
+import { Dialog, DialogContent, DialogHeader, DialogTitle, DialogTrigger } from '@/components/ui/dialog';
+import { Settings } from 'lucide-react';
 import UserMenu from './UserMenu';
 import { useIsMobile } from '@/hooks/use-mobile';
+import { useToast } from '@/hooks/use-toast';
 
 interface ChatHeaderProps {
   messageCount: number;
@@ -10,6 +14,28 @@ interface ChatHeaderProps {
 
 const ChatHeader: React.FC<ChatHeaderProps> = ({ messageCount }) => {
   const isMobile = useIsMobile();
+  const { toast } = useToast();
+  const [password, setPassword] = useState('');
+  const [isAdmin, setIsAdmin] = useState(false);
+  const [isDialogOpen, setIsDialogOpen] = useState(false);
+
+  const handleAdminLogin = () => {
+    if (password === 'codo1234') {
+      setIsAdmin(true);
+      setIsDialogOpen(false);
+      toast({
+        title: "Admin Access Granted",
+        description: "Welcome, Admin! You now have admin privileges.",
+      });
+    } else {
+      toast({
+        title: "Access Denied",
+        description: "Incorrect password. Please try again.",
+        variant: "destructive",
+      });
+    }
+    setPassword('');
+  };
 
   return (
     <header className="border-b bg-white shadow-sm">
@@ -28,7 +54,47 @@ const ChatHeader: React.FC<ChatHeaderProps> = ({ messageCount }) => {
           )}
         </div>
         
-        <div className="flex-1 flex justify-end">
+        <div className="flex-1 flex justify-end items-center gap-2">
+          {!isAdmin && (
+            <Dialog open={isDialogOpen} onOpenChange={setIsDialogOpen}>
+              <DialogTrigger asChild>
+                <Button variant="ghost" size="icon">
+                  <Settings className="h-5 w-5" />
+                </Button>
+              </DialogTrigger>
+              <DialogContent>
+                <DialogHeader>
+                  <DialogTitle>Admin Access</DialogTitle>
+                </DialogHeader>
+                <div className="space-y-4">
+                  <Input
+                    type="password"
+                    placeholder="Enter admin password"
+                    value={password}
+                    onChange={(e) => setPassword(e.target.value)}
+                    onKeyPress={(e) => e.key === 'Enter' && handleAdminLogin()}
+                  />
+                  <Button onClick={handleAdminLogin} className="w-full">
+                    Login as Admin
+                  </Button>
+                </div>
+              </DialogContent>
+            </Dialog>
+          )}
+          
+          {isAdmin && (
+            <div className="flex items-center gap-2">
+              <span className="text-sm font-medium text-green-600">Admin</span>
+              <Button 
+                variant="outline" 
+                size="sm"
+                onClick={() => setIsAdmin(false)}
+              >
+                Logout Admin
+              </Button>
+            </div>
+          )}
+          
           <UserMenu />
         </div>
       </div>

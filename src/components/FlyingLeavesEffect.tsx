@@ -42,41 +42,44 @@ const FlyingLeavesEffect: React.FC<FlyingLeavesEffectProps> = ({
   if (!isActive || leaves.length === 0) return null;
 
   return (
-    <div className="fixed inset-0 pointer-events-none z-50">
-      {leaves.map((leaf) => (
-        <div
-          key={leaf.id}
-          className="absolute animate-[flyAway_2s_ease-in-out_forwards]"
-          style={{
-            left: leaf.x,
-            top: leaf.y,
-            transform: `rotate(${leaf.rotation}deg) scale(${leaf.scale})`,
-            animationDelay: `${leaf.delay}ms`,
-          }}
-        >
-          <div className="bg-green-100 p-2 rounded-lg shadow-md border border-green-200 opacity-80">
-            <MessageSquare className="w-4 h-4 text-green-600" />
+    <>
+      <style>
+        {`
+          @keyframes flyAway {
+            0% {
+              transform: translateY(0) rotate(0deg) scale(1);
+              opacity: 0.8;
+            }
+            50% {
+              transform: translateY(-200px) rotate(180deg) scale(0.8);
+              opacity: 0.6;
+            }
+            100% {
+              transform: translateY(-400px) rotate(360deg) scale(0.3);
+              opacity: 0;
+            }
+          }
+        `}
+      </style>
+      <div className="fixed inset-0 pointer-events-none z-50">
+        {leaves.map((leaf) => (
+          <div
+            key={leaf.id}
+            className="absolute animate-[flyAway_2s_ease-in-out_forwards]"
+            style={{
+              left: leaf.x,
+              top: leaf.y,
+              transform: `rotate(${leaf.rotation}deg) scale(${leaf.scale})`,
+              animationDelay: `${leaf.delay}ms`,
+            }}
+          >
+            <div className="bg-green-100 p-2 rounded-lg shadow-md border border-green-200 opacity-80">
+              <MessageSquare className="w-4 h-4 text-green-600" />
+            </div>
           </div>
-        </div>
-      ))}
-      
-      <style jsx>{`
-        @keyframes flyAway {
-          0% {
-            transform: translateY(0) rotate(0deg) scale(1);
-            opacity: 0.8;
-          }
-          50% {
-            transform: translateY(-200px) rotate(180deg) scale(0.8);
-            opacity: 0.6;
-          }
-          100% {
-            transform: translateY(-400px) rotate(360deg) scale(0.3);
-            opacity: 0;
-          }
-        }
-      `}</style>
-    </div>
+        ))}
+      </div>
+    </>
   );
 };
 

@@ -9,6 +9,7 @@ import AlbedoAvatar from './AlbedoAvatar';
 import { Message } from '@/hooks/useMessageHandling';
 import { useTextToSpeech } from '@/hooks/useTextToSpeech';
 import { Badge } from '@/components/ui/badge';
+import { useToast } from '@/hooks/use-toast';
 
 interface ChatMessageProps {
   message: Message;
@@ -33,6 +34,7 @@ const ChatMessage = ({
 }: ChatMessageProps) => {
   const [editedContent, setEditedContent] = useState(message.content);
   const { speak, pause, resume, isPlaying, isPaused } = useTextToSpeech();
+  const { toast } = useToast();
 
   const handleSpeakText = () => {
     if (isPlaying) {
@@ -46,6 +48,23 @@ const ChatMessage = ({
     }
   };
 
+  const handleFeedback = (feedback: 'like' | 'dislike') => {
+    onFeedback(message.id, feedback);
+    
+    if (feedback === 'like') {
+      toast({
+        title: "Thank you! 😊",
+        description: "Albedo is happy to help! Your feedback helps me improve.",
+      });
+    } else {
+      toast({
+        title: "Sorry about that! 😔",
+        description: "Albedo apologizes for not meeting your expectations. I'll try to do better!",
+        variant: "destructive",
+      });
+    }
+  };
+
   return (
     <div className="py-2">
       <Card className={`p-4 ${message.type === 'assistant' ? 'bg-blue-50 border-blue-100' : ''}`}>
@@ -55,7 +74,7 @@ const ChatMessage = ({
               <AvatarFallback className="bg-blue-500 text-white">U</AvatarFallback>
             </Avatar>
           ) : (
-            <AlbedoAvatar className="h-8 w-8" subjectTag={message.subject} />
+            <AlbedoAvatar />
           )}
 
           <div className="flex-1">
@@ -109,7 +128,7 @@ const ChatMessage = ({
             <Button
               variant="outline"
               size="sm"
-              onClick={() => onFeedback(message.id, 'like')}
+              onClick={() => handleFeedback('like')}
               className={message.feedback === 'like' ? 'bg-green-50 border-green-200' : ''}
             >
               <ThumbsUp className={`h-4 w-4 mr-1 ${message.feedback === 'like' ? 'text-green-500' : ''}`} />
@@ -119,7 +138,7 @@ const ChatMessage = ({
             <Button
               variant="outline"
               size="sm"
-              onClick={() => onFeedback(message.id, 'dislike')}
+              onClick={() => handleFeedback('dislike')}
               className={message.feedback === 'dislike' ? 'bg-red-50 border-red-200' : ''}
             >
               <ThumbsDown className={`h-4 w-4 mr-1 ${message.feedback === 'dislike' ? 'text-red-500' : ''}`} />
