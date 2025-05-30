@@ -2,17 +2,20 @@
 import { ReactNode, useEffect } from 'react';
 import { useNavigate, useLocation } from 'react-router-dom';
 import { useAuth } from '@/hooks/useAuth';
+import { useAdmin } from '@/hooks/useAdmin';
 
 const AuthProtected = ({ children }: { children: ReactNode }) => {
   const { user, loading } = useAuth();
+  const { isAdmin } = useAdmin();
   const navigate = useNavigate();
   const location = useLocation();
 
   useEffect(() => {
-    if (!loading && !user) {
+    // Allow admin users to bypass authentication
+    if (!loading && !user && !isAdmin) {
       navigate('/auth', { state: { returnUrl: location.pathname } });
     }
-  }, [user, loading, navigate, location]);
+  }, [user, loading, isAdmin, navigate, location]);
 
   if (loading) {
     return (
@@ -39,7 +42,8 @@ const AuthProtected = ({ children }: { children: ReactNode }) => {
     );
   }
 
-  if (!user) {
+  // Allow access if user is authenticated OR if user is admin
+  if (!user && !isAdmin) {
     return null;
   }
 

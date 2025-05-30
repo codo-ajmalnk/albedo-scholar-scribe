@@ -1,20 +1,25 @@
-
 import { useState } from 'react';
 import { useNavigate } from 'react-router-dom';
 import { useAuth } from '@/hooks/useAuth';
+import { useAdmin } from '@/hooks/useAdmin';
 import { Button } from '@/components/ui/button';
 import { Input } from '@/components/ui/input';
 import { Card, CardContent, CardDescription, CardHeader, CardTitle } from '@/components/ui/card';
 import { Label } from '@/components/ui/label';
 import { useToast } from '@/hooks/use-toast';
 import { Tabs, TabsContent, TabsList, TabsTrigger } from '@/components/ui/tabs';
+import { Dialog, DialogContent, DialogHeader, DialogTitle, DialogTrigger } from '@/components/ui/dialog';
+import { Settings } from 'lucide-react';
 
 const Auth = () => {
   const [email, setEmail] = useState('');
   const [password, setPassword] = useState('');
   const [fullName, setFullName] = useState('');
   const [loading, setLoading] = useState(false);
+  const [adminPassword, setAdminPassword] = useState('');
+  const [isAdminDialogOpen, setIsAdminDialogOpen] = useState(false);
   const { signIn, signUp } = useAuth();
+  const { setIsAdmin } = useAdmin();
   const { toast } = useToast();
   const navigate = useNavigate();
 
@@ -57,6 +62,25 @@ const Auth = () => {
     } finally {
       setLoading(false);
     }
+  };
+
+  const handleAdminLogin = () => {
+    if (adminPassword === 'codo1234') {
+      setIsAdmin(true);
+      setIsAdminDialogOpen(false);
+      toast({
+        title: "Admin Access Granted",
+        description: "Welcome, Admin! You now have admin privileges.",
+      });
+      navigate('/');
+    } else {
+      toast({
+        title: "Access Denied",
+        description: "Incorrect admin password. Please try again.",
+        variant: "destructive",
+      });
+    }
+    setAdminPassword('');
   };
 
   return (
@@ -138,6 +162,35 @@ const Auth = () => {
               </form>
             </TabsContent>
           </Tabs>
+
+          {/* Admin Access Section */}
+          <div className="mt-6 pt-6 border-t border-gray-200">
+            <Dialog open={isAdminDialogOpen} onOpenChange={setIsAdminDialogOpen}>
+              <DialogTrigger asChild>
+                <Button variant="outline" className="w-full" size="sm">
+                  <Settings className="h-4 w-4 mr-2" />
+                  Admin Access
+                </Button>
+              </DialogTrigger>
+              <DialogContent>
+                <DialogHeader>
+                  <DialogTitle>Admin Login</DialogTitle>
+                </DialogHeader>
+                <div className="space-y-4">
+                  <Input
+                    type="password"
+                    placeholder="Enter admin password"
+                    value={adminPassword}
+                    onChange={(e) => setAdminPassword(e.target.value)}
+                    onKeyPress={(e) => e.key === 'Enter' && handleAdminLogin()}
+                  />
+                  <Button onClick={handleAdminLogin} className="w-full">
+                    Login as Admin
+                  </Button>
+                </div>
+              </DialogContent>
+            </Dialog>
+          </div>
         </CardContent>
       </Card>
     </div>
