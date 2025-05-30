@@ -7,7 +7,7 @@ const TypingIndicator = () => {
     <div className="flex justify-start mb-4">
       <Card className="max-w-xs p-4 bg-gradient-to-r from-green-50 to-blue-50 border-green-200 shadow-md">
         <div className="flex items-center space-x-3">
-          <AlbedoAvatar isThinking={true} size="sm" />
+          <AlbedoAvatar />
           <div className="flex flex-col">
             <span className="text-sm text-green-700 font-medium">Albedo Educator</span>
             <div className="flex items-center space-x-1 mt-1">
