@@ -4,6 +4,7 @@ import ChatHeader from '@/components/ChatHeader';
 import ChatContainer from '@/components/ChatContainer';
 import ChatSidebar from '@/components/ChatSidebar';
 import MessageInput from '@/components/MessageInput';
+import FlyingLeavesEffect from '@/components/FlyingLeavesEffect';
 import { useMessageHandling } from '@/hooks/useMessageHandling';
 import { useFileHandling } from '@/hooks/useFileHandling';
 import { useChatHistory } from '@/hooks/useChatHistory';
@@ -11,6 +12,8 @@ import { useAuth } from '@/hooks/useAuth';
 
 const Index = () => {
   const [inputMessage, setInputMessage] = useState('');
+  const [isLeavesEffectActive, setIsLeavesEffectActive] = useState(false);
+  const [previousMessages, setPreviousMessages] = useState<any[]>([]);
   const { user } = useAuth();
   
   const {
@@ -76,8 +79,19 @@ const Index = () => {
   };
 
   const handleNewChat = () => {
+    // Store current messages for the flying effect
+    setPreviousMessages([...messages]);
+    
+    // Start the leaves effect
+    setIsLeavesEffectActive(true);
+  };
+
+  const handleLeavesEffectComplete = () => {
+    // Create new chat after the effect completes
     const newChatId = createNewChat();
     setCurrentChatId(newChatId);
+    setIsLeavesEffectActive(false);
+    setPreviousMessages([]);
   };
 
   const handleSelectChat = (chatId: string) => {
@@ -123,6 +137,12 @@ const Index = () => {
           />
         </div>
       </div>
+
+      <FlyingLeavesEffect
+        isActive={isLeavesEffectActive}
+        onComplete={handleLeavesEffectComplete}
+        messages={previousMessages}
+      />
     </div>
   );
 };
