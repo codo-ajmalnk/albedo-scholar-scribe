@@ -1,5 +1,5 @@
 
-import { useState, createContext, useContext } from 'react';
+import { useState, createContext, useContext, useEffect } from 'react';
 
 interface AdminContextType {
   isAdmin: boolean;
@@ -17,6 +17,29 @@ export const useAdmin = () => {
 };
 
 export const useAdminState = () => {
-  const [isAdmin, setIsAdmin] = useState(false);
+  const [isAdmin, setIsAdminState] = useState(() => {
+    // Initialize from localStorage
+    const savedAdminState = localStorage.getItem('albedo-admin-state');
+    return savedAdminState === 'true';
+  });
+
+  const setIsAdmin = (value: boolean) => {
+    setIsAdminState(value);
+    // Persist to localStorage
+    localStorage.setItem('albedo-admin-state', value.toString());
+  };
+
+  useEffect(() => {
+    // Listen for storage changes (in case admin state is changed in another tab)
+    const handleStorageChange = (e: StorageEvent) => {
+      if (e.key === 'albedo-admin-state') {
+        setIsAdminState(e.newValue === 'true');
+      }
+    };
+
+    window.addEventListener('storage', handleStorageChange);
+    return () => window.removeEventListener('storage', handleStorageChange);
+  }, []);
+
   return { isAdmin, setIsAdmin };
 };

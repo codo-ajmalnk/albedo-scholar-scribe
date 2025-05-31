@@ -18,6 +18,7 @@ const Auth = () => {
   const [loading, setLoading] = useState(false);
   const [adminPassword, setAdminPassword] = useState('');
   const [isAdminDialogOpen, setIsAdminDialogOpen] = useState(false);
+  const [adminLoading, setAdminLoading] = useState(false);
   const { signIn, signUp } = useAuth();
   const { setIsAdmin } = useAdmin();
   const { toast } = useToast();
@@ -64,23 +65,48 @@ const Auth = () => {
     }
   };
 
-  const handleAdminLogin = () => {
-    if (adminPassword === 'codo1234') {
-      setIsAdmin(true);
-      setIsAdminDialogOpen(false);
+  const handleAdminLogin = async () => {
+    if (!adminPassword.trim()) {
       toast({
-        title: "Admin Access Granted",
-        description: "Welcome, Admin! You now have admin privileges.",
-      });
-      navigate('/');
-    } else {
-      toast({
-        title: "Access Denied",
-        description: "Incorrect admin password. Please try again.",
+        title: "Password Required",
+        description: "Please enter the admin password.",
         variant: "destructive",
       });
+      return;
     }
-    setAdminPassword('');
+
+    setAdminLoading(true);
+    
+    try {
+      if (adminPassword === 'codo1234') {
+        setIsAdmin(true);
+        setIsAdminDialogOpen(false);
+        setAdminPassword('');
+        
+        toast({
+          title: "Admin Access Granted",
+          description: "Welcome, Admin! You now have admin privileges.",
+        });
+        
+        // Use window.location.href for a full page refresh to ensure clean state
+        window.location.href = '/';
+      } else {
+        toast({
+          title: "Access Denied",
+          description: "Incorrect admin password. Please try again.",
+          variant: "destructive",
+        });
+        setAdminPassword('');
+      }
+    } catch (error) {
+      toast({
+        title: "Error",
+        description: "An error occurred during admin login. Please try again.",
+        variant: "destructive",
+      });
+    } finally {
+      setAdminLoading(false);
+    }
   };
 
   return (
@@ -182,10 +208,15 @@ const Auth = () => {
                     placeholder="Enter admin password"
                     value={adminPassword}
                     onChange={(e) => setAdminPassword(e.target.value)}
-                    onKeyPress={(e) => e.key === 'Enter' && handleAdminLogin()}
+                    onKeyPress={(e) => e.key === 'Enter' && !adminLoading && handleAdminLogin()}
+                    disabled={adminLoading}
                   />
-                  <Button onClick={handleAdminLogin} className="w-full">
-                    Login as Admin
+                  <Button 
+                    onClick={handleAdminLogin} 
+                    className="w-full" 
+                    disabled={adminLoading}
+                  >
+                    {adminLoading ? "Logging in..." : "Login as Admin"}
                   </Button>
                 </div>
               </DialogContent>
