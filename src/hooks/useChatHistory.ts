@@ -8,6 +8,7 @@ export interface ChatSession {
   messages: Message[];
   createdAt: Date;
   updatedAt: Date;
+  messageCount: number;
 }
 
 export const useChatHistory = () => {
@@ -18,7 +19,11 @@ export const useChatHistory = () => {
   useEffect(() => {
     const savedChats = localStorage.getItem('albedo-chat-history');
     if (savedChats) {
-      const parsed = JSON.parse(savedChats);
+      const parsed = JSON.parse(savedChats).map((chat: any) => ({
+        ...chat,
+        createdAt: new Date(chat.createdAt),
+        updatedAt: new Date(chat.updatedAt)
+      }));
       setChatSessions(parsed);
       if (parsed.length > 0) {
         setCurrentChatId(parsed[0].id);
@@ -34,12 +39,14 @@ export const useChatHistory = () => {
   }, [chatSessions]);
 
   const createNewChat = () => {
+    const now = new Date();
     const newChat: ChatSession = {
       id: Date.now().toString(),
-      title: 'New Chat',
+      title: `Chat ${now.toLocaleDateString()} ${now.toLocaleTimeString([], { hour: '2-digit', minute: '2-digit' })}`,
       messages: [],
-      createdAt: new Date(),
-      updatedAt: new Date()
+      createdAt: now,
+      updatedAt: now,
+      messageCount: 0
     };
     
     setChatSessions(prev => [newChat, ...prev]);
@@ -53,8 +60,11 @@ export const useChatHistory = () => {
         ? { 
             ...chat, 
             messages, 
-            title: messages.length > 0 ? messages[0].content.slice(0, 30) + '...' : 'New Chat',
-            updatedAt: new Date() 
+            title: messages.length > 0 ? 
+              `${messages[0].content.slice(0, 25)}... (${messages.length})` : 
+              `Chat ${chat.createdAt.toLocaleDateString()}`,
+            updatedAt: new Date(),
+            messageCount: messages.length
           }
         : chat
     ));
