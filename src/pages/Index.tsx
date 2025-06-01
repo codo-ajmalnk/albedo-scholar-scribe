@@ -1,10 +1,11 @@
-
 import { useState, useEffect } from 'react';
 import ChatHeader from '@/components/ChatHeader';
 import ChatContainer from '@/components/ChatContainer';
 import ChatSidebar from '@/components/ChatSidebar';
 import MessageInput from '@/components/MessageInput';
 import FlyingLeavesEffect from '@/components/FlyingLeavesEffect';
+import DeepResearchTool from '@/components/DeepResearchTool';
+import UsageIndicator from '@/components/UsageIndicator';
 import { useMessageHandling } from '@/hooks/useMessageHandling';
 import { useFileHandling } from '@/hooks/useFileHandling';
 import { useChatHistory } from '@/hooks/useChatHistory';
@@ -15,6 +16,7 @@ const Index = () => {
   const [inputMessage, setInputMessage] = useState('');
   const [isLeavesEffectActive, setIsLeavesEffectActive] = useState(false);
   const [previousMessages, setPreviousMessages] = useState<any[]>([]);
+  const [showDeepResearch, setShowDeepResearch] = useState(false);
   const { user } = useAuth();
   const { isAdmin } = useAdmin();
   
@@ -76,6 +78,15 @@ const Index = () => {
     setUploadedFiles([]);
   };
 
+  const handleDeepResearch = (query: string) => {
+    if (!currentChatId) {
+      const newChatId = createNewChat();
+      setCurrentChatId(newChatId);
+    }
+    sendMessage(query, [], true); // true indicates this is a research query
+    setShowDeepResearch(false);
+  };
+
   const handleEditMessage = (messageId: string, newContent: string) => {
     editMessage(messageId, newContent);
   };
@@ -119,17 +130,71 @@ const Index = () => {
         <ChatHeader messageCount={messages.length} />
         
         <div className="max-w-4xl mx-auto px-4 py-6 h-[calc(100vh-140px)] flex flex-col w-full">
-          <ChatContainer
-            messages={messages}
-            isLoading={isLoading}
-            editingMessageId={editingMessageId}
-            onGeneratePDF={generatePDF}
-            onSpeakText={speakText}
-            onEditMessage={handleEditMessage}
-            onRegenerateResponse={regenerateResponse}
-            onFeedback={setMessageFeedback}
-            onStartEdit={setEditingMessageId}
-          />
+          {messages.length === 0 && (
+            <div className="flex-1 flex flex-col items-center justify-center space-y-6">
+              <div className="text-center space-y-4">
+                <h2 className="text-2xl font-bold text-gray-800">Welcome to Albedo AI</h2>
+                <p className="text-gray-600">Start a conversation or try our deep research tool</p>
+              </div>
+              
+              <div className="flex flex-col lg:flex-row gap-6 w-full max-w-4xl">
+                <div className="flex-1">
+                  <DeepResearchTool 
+                    onResearch={handleDeepResearch}
+                    isLoading={isLoading}
+                  />
+                </div>
+                <div className="lg:w-80">
+                  <UsageIndicator />
+                </div>
+              </div>
+            </div>
+          )}
+
+          {messages.length > 0 && (
+            <>
+              <div className="flex-1 flex gap-6">
+                <div className="flex-1">
+                  <ChatContainer
+                    messages={messages}
+                    isLoading={isLoading}
+                    editingMessageId={editingMessageId}
+                    onGeneratePDF={generatePDF}
+                    onSpeakText={speakText}
+                    onEditMessage={handleEditMessage}
+                    onRegenerateResponse={regenerateResponse}
+                    onFeedback={setMessageFeedback}
+                    onStartEdit={setEditingMessageId}
+                  />
+                </div>
+                <div className="w-80 hidden lg:block">
+                  <div className="sticky top-4 space-y-4">
+                    <UsageIndicator />
+                    {!showDeepResearch && (
+                      <button
+                        onClick={() => setShowDeepResearch(true)}
+                        className="w-full p-3 text-left border rounded-lg hover:bg-gray-50 transition-colors"
+                      >
+                        <div className="flex items-center space-x-2">
+                          <Search className="h-4 w-4" />
+                          <span className="text-sm font-medium">Deep Research</span>
+                        </div>
+                        <p className="text-xs text-gray-500 mt-1">
+                          Get comprehensive analysis
+                        </p>
+                      </button>
+                    )}
+                    {showDeepResearch && (
+                      <DeepResearchTool 
+                        onResearch={handleDeepResearch}
+                        isLoading={isLoading}
+                      />
+                    )}
+                  </div>
+                </div>
+              </div>
+            </>
+          )}
 
           <MessageInput
             inputMessage={inputMessage}

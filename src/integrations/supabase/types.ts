@@ -9,6 +9,96 @@ export type Json =
 export type Database = {
   public: {
     Tables: {
+      billing_info: {
+        Row: {
+          billing_address: Json | null
+          created_at: string | null
+          id: string
+          payment_methods: Json | null
+          stripe_customer_id: string | null
+          updated_at: string | null
+          user_id: string
+        }
+        Insert: {
+          billing_address?: Json | null
+          created_at?: string | null
+          id?: string
+          payment_methods?: Json | null
+          stripe_customer_id?: string | null
+          updated_at?: string | null
+          user_id: string
+        }
+        Update: {
+          billing_address?: Json | null
+          created_at?: string | null
+          id?: string
+          payment_methods?: Json | null
+          stripe_customer_id?: string | null
+          updated_at?: string | null
+          user_id?: string
+        }
+        Relationships: []
+      }
+      daily_usage: {
+        Row: {
+          count: number | null
+          created_at: string | null
+          id: string
+          updated_at: string | null
+          usage_date: string | null
+          usage_type: Database["public"]["Enums"]["usage_type"]
+          user_id: string
+        }
+        Insert: {
+          count?: number | null
+          created_at?: string | null
+          id?: string
+          updated_at?: string | null
+          usage_date?: string | null
+          usage_type: Database["public"]["Enums"]["usage_type"]
+          user_id: string
+        }
+        Update: {
+          count?: number | null
+          created_at?: string | null
+          id?: string
+          updated_at?: string | null
+          usage_date?: string | null
+          usage_type?: Database["public"]["Enums"]["usage_type"]
+          user_id?: string
+        }
+        Relationships: []
+      }
+      login_activity: {
+        Row: {
+          device_info: Json | null
+          id: string
+          ip_address: unknown | null
+          location: string | null
+          login_time: string | null
+          user_agent: string | null
+          user_id: string
+        }
+        Insert: {
+          device_info?: Json | null
+          id?: string
+          ip_address?: unknown | null
+          location?: string | null
+          login_time?: string | null
+          user_agent?: string | null
+          user_id: string
+        }
+        Update: {
+          device_info?: Json | null
+          id?: string
+          ip_address?: unknown | null
+          location?: string | null
+          login_time?: string | null
+          user_agent?: string | null
+          user_id?: string
+        }
+        Relationships: []
+      }
       profiles: {
         Row: {
           avatar_url: string | null
@@ -36,15 +126,148 @@ export type Database = {
         }
         Relationships: []
       }
+      user_2fa: {
+        Row: {
+          backup_codes: string[] | null
+          created_at: string | null
+          id: string
+          is_enabled: boolean | null
+          secret_key: string | null
+          updated_at: string | null
+          user_id: string
+        }
+        Insert: {
+          backup_codes?: string[] | null
+          created_at?: string | null
+          id?: string
+          is_enabled?: boolean | null
+          secret_key?: string | null
+          updated_at?: string | null
+          user_id: string
+        }
+        Update: {
+          backup_codes?: string[] | null
+          created_at?: string | null
+          id?: string
+          is_enabled?: boolean | null
+          secret_key?: string | null
+          updated_at?: string | null
+          user_id?: string
+        }
+        Relationships: []
+      }
+      user_profiles: {
+        Row: {
+          bio: string | null
+          created_at: string | null
+          date_of_birth: string | null
+          gender: Database["public"]["Enums"]["gender_type"] | null
+          id: string
+          location: string | null
+          name: string | null
+          phone_number: string | null
+          profile_picture_url: string | null
+          updated_at: string | null
+          user_id: string
+          username: string | null
+        }
+        Insert: {
+          bio?: string | null
+          created_at?: string | null
+          date_of_birth?: string | null
+          gender?: Database["public"]["Enums"]["gender_type"] | null
+          id?: string
+          location?: string | null
+          name?: string | null
+          phone_number?: string | null
+          profile_picture_url?: string | null
+          updated_at?: string | null
+          user_id: string
+          username?: string | null
+        }
+        Update: {
+          bio?: string | null
+          created_at?: string | null
+          date_of_birth?: string | null
+          gender?: Database["public"]["Enums"]["gender_type"] | null
+          id?: string
+          location?: string | null
+          name?: string | null
+          phone_number?: string | null
+          profile_picture_url?: string | null
+          updated_at?: string | null
+          user_id?: string
+          username?: string | null
+        }
+        Relationships: []
+      }
+      user_subscriptions: {
+        Row: {
+          created_at: string | null
+          credits: number | null
+          id: string
+          is_active: boolean | null
+          subscription_end_date: string | null
+          subscription_plan:
+            | Database["public"]["Enums"]["subscription_plan"]
+            | null
+          subscription_start_date: string | null
+          updated_at: string | null
+          user_id: string
+        }
+        Insert: {
+          created_at?: string | null
+          credits?: number | null
+          id?: string
+          is_active?: boolean | null
+          subscription_end_date?: string | null
+          subscription_plan?:
+            | Database["public"]["Enums"]["subscription_plan"]
+            | null
+          subscription_start_date?: string | null
+          updated_at?: string | null
+          user_id: string
+        }
+        Update: {
+          created_at?: string | null
+          credits?: number | null
+          id?: string
+          is_active?: boolean | null
+          subscription_end_date?: string | null
+          subscription_plan?:
+            | Database["public"]["Enums"]["subscription_plan"]
+            | null
+          subscription_start_date?: string | null
+          updated_at?: string | null
+          user_id?: string
+        }
+        Relationships: []
+      }
     }
     Views: {
       [_ in never]: never
     }
     Functions: {
-      [_ in never]: never
+      check_usage_limit: {
+        Args: {
+          user_id_param: string
+          usage_type_param: Database["public"]["Enums"]["usage_type"]
+          limit_amount: number
+        }
+        Returns: boolean
+      }
+      increment_usage: {
+        Args: {
+          user_id_param: string
+          usage_type_param: Database["public"]["Enums"]["usage_type"]
+        }
+        Returns: undefined
+      }
     }
     Enums: {
-      [_ in never]: never
+      gender_type: "male" | "female" | "other" | "prefer_not_to_say"
+      subscription_plan: "free" | "pro" | "unlimited"
+      usage_type: "chat" | "image_generation" | "image_upload" | "deep_research"
     }
     CompositeTypes: {
       [_ in never]: never
@@ -159,6 +382,10 @@ export type CompositeTypes<
 
 export const Constants = {
   public: {
-    Enums: {},
+    Enums: {
+      gender_type: ["male", "female", "other", "prefer_not_to_say"],
+      subscription_plan: ["free", "pro", "unlimited"],
+      usage_type: ["chat", "image_generation", "image_upload", "deep_research"],
+    },
   },
 } as const
