@@ -11,22 +11,19 @@ const AuthProtected = ({ children }: { children: ReactNode }) => {
   const location = useLocation();
 
   useEffect(() => {
-    // If we're still loading or user is authenticated or admin, allow access
-    if (loading) return;
-    
-    // Allow access if user is authenticated OR if user is admin
-    if (user || isAdmin) return;
-    
-    // Only redirect if no user and not admin
-    navigate('/auth', { state: { returnUrl: location.pathname } });
+    // Only redirect if we're done loading and user is not authenticated and not admin
+    if (!loading && !user && !isAdmin) {
+      navigate('/auth', { state: { returnUrl: location.pathname } });
+    }
   }, [user, loading, isAdmin, navigate, location]);
 
+  // Show loading spinner while auth is being determined
   if (loading) {
     return (
       <div className="min-h-screen flex items-center justify-center bg-gradient-to-br from-green-50 via-blue-50 to-purple-50">
-        <div className="animate-pulse">
+        <div className="animate-pulse text-center">
           <svg
-            className="w-10 h-10 text-primary mx-auto"
+            className="w-10 h-10 text-primary mx-auto animate-spin"
             xmlns="http://www.w3.org/2000/svg"
             width="24"
             height="24"
@@ -51,7 +48,7 @@ const AuthProtected = ({ children }: { children: ReactNode }) => {
     return <>{children}</>;
   }
 
-  // If we reach here, user will be redirected
+  // If we reach here, user will be redirected in the useEffect
   return null;
 };
 

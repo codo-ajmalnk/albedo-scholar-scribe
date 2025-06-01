@@ -1,3 +1,4 @@
+
 import { useState, useEffect } from 'react';
 import { useNavigate } from 'react-router-dom';
 import { useAuth } from '@/hooks/useAuth';
@@ -19,17 +20,43 @@ const Auth = () => {
   const [adminPassword, setAdminPassword] = useState('');
   const [isAdminDialogOpen, setIsAdminDialogOpen] = useState(false);
   const [adminLoading, setAdminLoading] = useState(false);
-  const { signIn, signUp, user } = useAuth();
+  const { signIn, signUp, user, loading: authLoading } = useAuth();
   const { setIsAdmin, isAdmin } = useAdmin();
   const { toast } = useToast();
   const navigate = useNavigate();
 
-  // Redirect if already authenticated or admin
+  // Redirect if already authenticated or admin (but only after auth loading is complete)
   useEffect(() => {
-    if (user || isAdmin) {
+    if (!authLoading && (user || isAdmin)) {
       navigate('/');
     }
-  }, [user, isAdmin, navigate]);
+  }, [user, isAdmin, authLoading, navigate]);
+
+  // Show loading if auth is still initializing
+  if (authLoading) {
+    return (
+      <div className="min-h-screen flex items-center justify-center bg-gradient-to-br from-green-50 via-blue-50 to-purple-50">
+        <div className="animate-pulse text-center">
+          <svg
+            className="w-10 h-10 text-primary mx-auto animate-spin"
+            xmlns="http://www.w3.org/2000/svg"
+            width="24"
+            height="24"
+            viewBox="0 0 24 24"
+            fill="none"
+            stroke="currentColor"
+            strokeWidth="2"
+            strokeLinecap="round"
+            strokeLinejoin="round"
+          >
+            <path d="M21 12a9 9 0 1 1-9-9c2.52 0 4.93 1 6.74 2.74L21 8" />
+            <path d="M21 3v5h-5" />
+          </svg>
+          <p className="mt-2 text-gray-500">Loading...</p>
+        </div>
+      </div>
+    );
+  }
 
   const handleSignIn = async (e: React.FormEvent) => {
     e.preventDefault();
