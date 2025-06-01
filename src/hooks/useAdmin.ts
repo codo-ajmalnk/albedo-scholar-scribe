@@ -1,12 +1,6 @@
 
-import { useState, createContext, useContext, useEffect } from 'react';
-
-interface AdminContextType {
-  isAdmin: boolean;
-  setIsAdmin: (value: boolean) => void;
-}
-
-export const AdminContext = createContext<AdminContextType | undefined>(undefined);
+import { useState, useEffect, useContext } from 'react';
+import { AdminContext } from '@/components/AdminProvider';
 
 export const useAdmin = () => {
   const context = useContext(AdminContext);
