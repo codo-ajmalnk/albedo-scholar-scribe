@@ -16,7 +16,11 @@ function App() {
         <AdminProvider>
           <Routes>
             <Route path="/auth" element={<Auth />} />
-            <Route path="/profile" element={<Profile />} />
+            <Route path="/profile" element={
+              <AuthProtected>
+                <Profile />
+              </AuthProtected>
+            } />
             <Route path="/" element={
               <AuthProtected>
                 <Index />
