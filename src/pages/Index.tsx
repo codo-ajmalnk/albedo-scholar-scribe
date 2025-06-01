@@ -1,3 +1,4 @@
+
 import { useState, useEffect } from 'react';
 import ChatHeader from '@/components/ChatHeader';
 import ChatContainer from '@/components/ChatContainer';
@@ -11,6 +12,7 @@ import { useFileHandling } from '@/hooks/useFileHandling';
 import { useChatHistory } from '@/hooks/useChatHistory';
 import { useAuth } from '@/hooks/useAuth';
 import { useAdmin } from '@/hooks/useAdmin';
+import { Search } from 'lucide-react';
 
 const Index = () => {
   const [inputMessage, setInputMessage] = useState('');

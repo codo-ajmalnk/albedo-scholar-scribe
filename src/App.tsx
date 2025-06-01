@@ -1,10 +1,11 @@
+
 import { BrowserRouter, Routes, Route } from 'react-router-dom';
 import Auth from '@/pages/Auth';
 import Index from '@/pages/Index';
 import NotFound from '@/pages/NotFound';
 import { AuthProvider } from '@/hooks/useAuth';
-import { AdminProvider } from '@/hooks/useAdmin';
-import { AuthProtected } from '@/components/AuthProtected';
+import { AdminProvider } from '@/components/AdminProvider';
+import AuthProtected from '@/components/AuthProtected';
 import { Toaster } from '@/components/ui/toaster';
 import Profile from '@/pages/Profile';
 

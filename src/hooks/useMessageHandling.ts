@@ -7,11 +7,14 @@ import { supabase } from '@/integrations/supabase/client';
 export interface Message {
   id: string;
   content: string;
+  type: 'user' | 'assistant';
   sender: 'user' | 'ai';
   timestamp: Date;
   files?: File[];
-  feedback?: 'positive' | 'negative';
+  feedback?: 'like' | 'dislike';
   isResearch?: boolean;
+  subject?: string;
+  isEdited?: boolean;
 }
 
 export const useMessageHandling = () => {
@@ -36,6 +39,7 @@ export const useMessageHandling = () => {
     const userMessage: Message = {
       id: Date.now().toString(),
       content,
+      type: 'user',
       sender: 'user',
       timestamp: new Date(),
       files,
@@ -67,6 +71,7 @@ export const useMessageHandling = () => {
       const aiMessage: Message = {
         id: (Date.now() + 1).toString(),
         content: data.response || 'Sorry, I could not process your request.',
+        type: 'assistant',
         sender: 'ai',
         timestamp: new Date(),
         isResearch,
@@ -94,7 +99,7 @@ export const useMessageHandling = () => {
 
   const editMessage = useCallback((messageId: string, newContent: string) => {
     setMessages(prev => prev.map(msg => 
-      msg.id === messageId ? { ...msg, content: newContent } : msg
+      msg.id === messageId ? { ...msg, content: newContent, isEdited: true } : msg
     ));
     setEditingMessageId(null);
   }, []);
@@ -138,7 +143,7 @@ export const useMessageHandling = () => {
     }
   }, [messages, toast]);
 
-  const setMessageFeedback = useCallback((messageId: string, feedback: 'positive' | 'negative') => {
+  const setMessageFeedback = useCallback((messageId: string, feedback: 'like' | 'dislike') => {
     setMessages(prev => prev.map(msg => 
       msg.id === messageId ? { ...msg, feedback } : msg
     ));

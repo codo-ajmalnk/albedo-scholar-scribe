@@ -17,14 +17,21 @@ const ProfileSettings = () => {
     username: profile?.username || '',
     phone_number: profile?.phone_number || '',
     date_of_birth: profile?.date_of_birth || '',
-    gender: profile?.gender || '',
+    gender: profile?.gender || '' as 'male' | 'female' | 'other' | 'prefer_not_to_say' | '',
     location: profile?.location || '',
     bio: profile?.bio || '',
   });
 
   const handleSubmit = async (e: React.FormEvent) => {
     e.preventDefault();
-    await updateProfile(formData);
+    const updateData = {
+      ...formData,
+      gender: formData.gender as 'male' | 'female' | 'other' | 'prefer_not_to_say' | undefined
+    };
+    if (!updateData.gender) {
+      delete updateData.gender;
+    }
+    await updateProfile(updateData);
   };
 
   const handleInputChange = (field: string, value: string) => {
@@ -111,7 +118,7 @@ const ProfileSettings = () => {
                   </div>
                   <div>
                     <Label htmlFor="gender">Gender</Label>
-                    <Select onValueChange={(value) => handleInputChange('gender', value)}>
+                    <Select onValueChange={(value) => handleInputChange('gender', value)} value={formData.gender}>
                       <SelectTrigger>
                         <SelectValue placeholder="Select gender" />
                       </SelectTrigger>

@@ -1,6 +1,7 @@
+
 import React from 'react';
-import { AlbedoAvatar } from '@/components/AlbedoAvatar';
-import { UserMenu } from '@/components/UserMenu';
+import AlbedoAvatar from '@/components/AlbedoAvatar';
+import UserMenu from '@/components/UserMenu';
 import { User } from 'lucide-react';
 import { Link } from 'react-router-dom';
 
