@@ -11,10 +11,14 @@ const AuthProtected = ({ children }: { children: ReactNode }) => {
   const location = useLocation();
 
   useEffect(() => {
-    // Allow admin users to bypass authentication
-    if (!loading && !user && !isAdmin) {
-      navigate('/auth', { state: { returnUrl: location.pathname } });
-    }
+    // If we're still loading or user is authenticated or admin, allow access
+    if (loading) return;
+    
+    // Allow access if user is authenticated OR if user is admin
+    if (user || isAdmin) return;
+    
+    // Only redirect if no user and not admin
+    navigate('/auth', { state: { returnUrl: location.pathname } });
   }, [user, loading, isAdmin, navigate, location]);
 
   if (loading) {
@@ -43,11 +47,12 @@ const AuthProtected = ({ children }: { children: ReactNode }) => {
   }
 
   // Allow access if user is authenticated OR if user is admin
-  if (!user && !isAdmin) {
-    return null;
+  if (user || isAdmin) {
+    return <>{children}</>;
   }
 
-  return <>{children}</>;
+  // If we reach here, user will be redirected
+  return null;
 };
 
 export default AuthProtected;

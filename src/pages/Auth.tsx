@@ -1,4 +1,4 @@
-import { useState } from 'react';
+import { useState, useEffect } from 'react';
 import { useNavigate } from 'react-router-dom';
 import { useAuth } from '@/hooks/useAuth';
 import { useAdmin } from '@/hooks/useAdmin';
@@ -19,10 +19,17 @@ const Auth = () => {
   const [adminPassword, setAdminPassword] = useState('');
   const [isAdminDialogOpen, setIsAdminDialogOpen] = useState(false);
   const [adminLoading, setAdminLoading] = useState(false);
-  const { signIn, signUp } = useAuth();
-  const { setIsAdmin } = useAdmin();
+  const { signIn, signUp, user } = useAuth();
+  const { setIsAdmin, isAdmin } = useAdmin();
   const { toast } = useToast();
   const navigate = useNavigate();
+
+  // Redirect if already authenticated or admin
+  useEffect(() => {
+    if (user || isAdmin) {
+      navigate('/');
+    }
+  }, [user, isAdmin, navigate]);
 
   const handleSignIn = async (e: React.FormEvent) => {
     e.preventDefault();
@@ -88,8 +95,8 @@ const Auth = () => {
           description: "Welcome, Admin! You now have admin privileges.",
         });
         
-        // Use window.location.href for a full page refresh to ensure clean state
-        window.location.href = '/';
+        // Navigate to main page immediately
+        navigate('/');
       } else {
         toast({
           title: "Access Denied",
