@@ -16,7 +16,7 @@ const FREE_LIMITS = {
   chat: 50,
   image_generation: 4,
   image_upload: 4,
-  deep_research: 2,
+  deep_research: 0, // Changed to 0 - only available with purchased credits
 };
 
 export const useUsageTracking = () => {
@@ -74,10 +74,20 @@ export const useUsageTracking = () => {
     const currentUsage = usage[type];
     const limit = FREE_LIMITS[type];
     
+    // Special handling for deep research - only available with purchased credits
+    if (type === 'deep_research' && limit === 0) {
+      toast({
+        title: "Deep Research requires credits",
+        description: "This feature is only available with purchased research credits. Please upgrade your account.",
+        variant: "destructive",
+      });
+      return false;
+    }
+    
     if (currentUsage >= limit) {
       toast({
         title: "Daily limit reached",
-        description: `You've reached your daily limit of ${limit} ${type.replace('_', ' ')}s. Upgrade to get unlimited access!`,
+        description: `You've reached your daily limit of ${limit} ${type.replace('_', ' ')}s. Upgrade to get more access!`,
         variant: "destructive",
       });
       return false;
@@ -108,6 +118,12 @@ export const useUsageTracking = () => {
 
   const getRemainingUsage = (type: keyof DailyUsage): number => {
     if (isAdmin) return 999; // Show unlimited for admin
+    
+    // For deep research, return 0 since it requires purchased credits
+    if (type === 'deep_research' && FREE_LIMITS[type] === 0) {
+      return 0;
+    }
+    
     return Math.max(0, FREE_LIMITS[type] - usage[type]);
   };
 
