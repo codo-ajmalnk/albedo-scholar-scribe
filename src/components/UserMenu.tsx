@@ -1,14 +1,16 @@
 
-import { User, LogOut } from 'lucide-react';
+import { User, LogOut, Settings } from 'lucide-react';
 import { Button } from '@/components/ui/button';
 import {
   DropdownMenu,
   DropdownMenuContent,
   DropdownMenuItem,
+  DropdownMenuSeparator,
   DropdownMenuTrigger,
 } from '@/components/ui/dropdown-menu';
 import { useAuth } from '@/hooks/useAuth';
 import { useToast } from '@/hooks/use-toast';
+import { Link } from 'react-router-dom';
 
 const UserMenu = () => {
   const { user, signOut } = useAuth();
@@ -18,12 +20,15 @@ const UserMenu = () => {
     try {
       await signOut();
       toast({
-        title: "Signed out",
-        description: "You have been successfully signed out.",
+        title: "Signed out successfully! 👋",
+        description: "You have been logged out. See you next time!",
       });
-    } catch (error) {
+      // Force page reload to ensure clean state
+      window.location.href = '/auth';
+    } catch (error: any) {
+      console.error('Sign out error:', error);
       toast({
-        title: "Error",
+        title: "Error signing out",
         description: "Failed to sign out. Please try again.",
         variant: "destructive",
       });
@@ -39,12 +44,27 @@ const UserMenu = () => {
           <User className="w-5 h-5" />
         </Button>
       </DropdownMenuTrigger>
-      <DropdownMenuContent align="end" className="w-48">
-        <DropdownMenuItem disabled>
-          <User className="w-4 h-4 mr-2" />
-          {user.email}
+      <DropdownMenuContent align="end" className="w-56 bg-white border shadow-lg">
+        <DropdownMenuItem disabled className="flex-col items-start">
+          <span className="font-medium">{user.email}</span>
+          <span className="text-xs text-gray-500">Signed in</span>
         </DropdownMenuItem>
-        <DropdownMenuItem onClick={handleSignOut}>
+        
+        <DropdownMenuSeparator />
+        
+        <DropdownMenuItem asChild>
+          <Link to="/profile" className="flex items-center w-full">
+            <Settings className="w-4 h-4 mr-2" />
+            Profile Settings
+          </Link>
+        </DropdownMenuItem>
+        
+        <DropdownMenuSeparator />
+        
+        <DropdownMenuItem 
+          onClick={handleSignOut}
+          className="text-red-600 focus:text-red-600 focus:bg-red-50"
+        >
           <LogOut className="w-4 h-4 mr-2" />
           Sign Out
         </DropdownMenuItem>

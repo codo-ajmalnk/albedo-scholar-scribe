@@ -4,7 +4,7 @@ import { Card } from '@/components/ui/card';
 import { Button } from '@/components/ui/button';
 import { Textarea } from '@/components/ui/textarea';
 import { Avatar, AvatarFallback, AvatarImage } from '@/components/ui/avatar';
-import { ThumbsUp, ThumbsDown, FileDown, PlayCircle, PauseCircle, Pencil, Repeat } from 'lucide-react';
+import { ThumbsUp, ThumbsDown, FileDown, PlayCircle, PauseCircle, Pencil, Repeat, Copy } from 'lucide-react';
 import AlbedoAvatar from './AlbedoAvatar';
 import { Message } from '@/hooks/useMessageHandling';
 import { useTextToSpeech } from '@/hooks/useTextToSpeech';
@@ -46,6 +46,43 @@ const ChatMessage = ({
     } else {
       speak(message.content);
     }
+  };
+
+  const handleCopyText = async () => {
+    try {
+      // Clean the content by removing HTML tags and extra formatting
+      const cleanContent = message.content
+        .replace(/<br\s*\/?>/gi, '\n')
+        .replace(/<[^>]*>/g, '')
+        .replace(/&nbsp;/g, ' ')
+        .replace(/&amp;/g, '&')
+        .replace(/&lt;/g, '<')
+        .replace(/&gt;/g, '>');
+
+      await navigator.clipboard.writeText(cleanContent);
+      
+      toast({
+        title: "Copied! 📋",
+        description: "Message content has been copied to your clipboard.",
+      });
+    } catch (error) {
+      // Fallback for older browsers
+      const textArea = document.createElement('textarea');
+      textArea.value = message.content.replace(/<br\s*\/?>/gi, '\n').replace(/<[^>]*>/g, '');
+      document.body.appendChild(textArea);
+      textArea.select();
+      document.execCommand('copy');
+      document.body.removeChild(textArea);
+      
+      toast({
+        title: "Copied! 📋",
+        description: "Message content has been copied to your clipboard.",
+      });
+    }
+  };
+
+  const handleGeneratePDF = () => {
+    onGeneratePDF(message.content);
   };
 
   const handleFeedback = (feedback: 'like' | 'dislike') => {
@@ -144,11 +181,20 @@ const ChatMessage = ({
               <ThumbsDown className={`h-4 w-4 mr-1 ${message.feedback === 'dislike' ? 'text-red-500' : ''}`} />
               {message.feedback === 'dislike' ? 'Disliked' : 'Dislike'}
             </Button>
+
+            <Button
+              variant="outline"
+              size="sm"
+              onClick={handleCopyText}
+            >
+              <Copy className="h-4 w-4 mr-1" />
+              Copy
+            </Button>
             
             <Button
               variant="outline"
               size="sm"
-              onClick={() => onGeneratePDF(message.content)}
+              onClick={handleGeneratePDF}
             >
               <FileDown className="h-4 w-4 mr-1" />
               Save PDF
@@ -179,7 +225,15 @@ const ChatMessage = ({
         )}
 
         {!isEditing && message.type === 'user' && (
-          <div className="flex justify-end mt-3">
+          <div className="flex justify-end mt-3 gap-2">
+            <Button
+              variant="ghost"
+              size="sm"
+              onClick={handleCopyText}
+            >
+              <Copy className="h-3 w-3 mr-1" />
+              Copy
+            </Button>
             <Button
               variant="ghost"
               size="sm"
