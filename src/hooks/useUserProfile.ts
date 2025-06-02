@@ -15,14 +15,18 @@ export interface UserProfile {
   gender: 'male' | 'female' | 'other' | 'prefer_not_to_say' | null;
   location: string | null;
   bio: string | null;
+  albedo_name: string | null;
 }
 
 export interface UserSubscription {
   id: string;
   user_id: string;
-  subscription_plan: 'free' | 'pro' | 'unlimited';
+  subscription_plan: 'free' | 'pro' | 'unlimited' | 'gold' | 'diamond';
   credits: number;
   is_active: boolean;
+  price: number | null;
+  discount_percentage: number | null;
+  expires_at: string | null;
 }
 
 export const useUserProfile = () => {
@@ -36,6 +40,8 @@ export const useUserProfile = () => {
     if (user) {
       loadProfile();
       loadSubscription();
+    } else {
+      setLoading(false);
     }
   }, [user]);
 
@@ -47,9 +53,9 @@ export const useUserProfile = () => {
         .from('user_profiles')
         .select('*')
         .eq('user_id', user.id)
-        .single();
+        .maybeSingle();
 
-      if (error && error.code !== 'PGRST116') {
+      if (error) {
         throw error;
       }
 
@@ -74,9 +80,9 @@ export const useUserProfile = () => {
         .from('user_subscriptions')
         .select('*')
         .eq('user_id', user.id)
-        .single();
+        .maybeSingle();
 
-      if (error && error.code !== 'PGRST116') {
+      if (error) {
         throw error;
       }
 

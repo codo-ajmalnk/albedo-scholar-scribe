@@ -9,17 +9,36 @@ import { Card, CardContent, CardDescription, CardHeader, CardTitle } from '@/com
 import { Select, SelectContent, SelectItem, SelectTrigger, SelectValue } from '@/components/ui/select';
 import { Tabs, TabsContent, TabsList, TabsTrigger } from '@/components/ui/tabs';
 import { User, Shield, CreditCard, Activity } from 'lucide-react';
+import CreditCards from './CreditCards';
+import UsageIndicator from './UsageIndicator';
 
 const ProfileSettings = () => {
   const { profile, subscription, loading, updateProfile } = useUserProfile();
   const [formData, setFormData] = useState({
     name: profile?.name || '',
     username: profile?.username || '',
+    albedo_name: profile?.albedo_name || 'Albedo',
     phone_number: profile?.phone_number || '',
     date_of_birth: profile?.date_of_birth || '',
     gender: profile?.gender || '' as 'male' | 'female' | 'other' | 'prefer_not_to_say' | '',
     location: profile?.location || '',
     bio: profile?.bio || '',
+  });
+
+  // Update form data when profile loads
+  useState(() => {
+    if (profile) {
+      setFormData({
+        name: profile.name || '',
+        username: profile.username || '',
+        albedo_name: profile.albedo_name || 'Albedo',
+        phone_number: profile.phone_number || '',
+        date_of_birth: profile.date_of_birth || '',
+        gender: profile.gender || '',
+        location: profile.location || '',
+        bio: profile.bio || '',
+      });
+    }
   });
 
   const handleSubmit = async (e: React.FormEvent) => {
@@ -39,7 +58,14 @@ const ProfileSettings = () => {
   };
 
   if (loading) {
-    return <div className="flex justify-center p-8">Loading...</div>;
+    return (
+      <div className="min-h-screen flex items-center justify-center bg-gradient-to-br from-green-50 via-blue-50 to-purple-50">
+        <div className="animate-pulse text-center">
+          <div className="w-10 h-10 bg-gray-300 rounded-full mx-auto animate-spin"></div>
+          <p className="mt-2 text-gray-500">Loading...</p>
+        </div>
+      </div>
+    );
   }
 
   return (
@@ -96,6 +122,15 @@ const ProfileSettings = () => {
                       value={formData.username}
                       onChange={(e) => handleInputChange('username', e.target.value)}
                       placeholder="Your username"
+                    />
+                  </div>
+                  <div>
+                    <Label htmlFor="albedo_name">Albedo's Name</Label>
+                    <Input
+                      id="albedo_name"
+                      value={formData.albedo_name}
+                      onChange={(e) => handleInputChange('albedo_name', e.target.value)}
+                      placeholder="Customize your AI assistant's name"
                     />
                   </div>
                   <div>
@@ -195,57 +230,23 @@ const ProfileSettings = () => {
         </TabsContent>
 
         <TabsContent value="subscription">
-          <Card>
-            <CardHeader>
-              <CardTitle>💳 Subscription & Payments</CardTitle>
-              <CardDescription>
-                Manage your subscription and billing information
-              </CardDescription>
-            </CardHeader>
-            <CardContent>
-              <div className="space-y-4">
-                <div className="p-4 bg-blue-50 border border-blue-200 rounded-lg">
-                  <h3 className="font-medium text-blue-900">Current Plan</h3>
-                  <p className="text-blue-700 capitalize">
-                    {subscription?.subscription_plan || 'Free'} Plan
-                  </p>
-                  <p className="text-sm text-blue-600">
-                    Credits remaining: {subscription?.credits || 0}
-                  </p>
-                </div>
-                <div className="flex items-center justify-between p-4 border rounded-lg">
-                  <div>
-                    <h3 className="font-medium">Upgrade Plan</h3>
-                    <p className="text-sm text-gray-600">Get unlimited access to all features</p>
-                  </div>
-                  <Button>Buy Credits</Button>
-                </div>
-                <div className="flex items-center justify-between p-4 border rounded-lg">
-                  <div>
-                    <h3 className="font-medium">Billing Information</h3>
-                    <p className="text-sm text-gray-600">Manage payment methods and billing</p>
-                  </div>
-                  <Button variant="outline">Manage Billing</Button>
-                </div>
-              </div>
-            </CardContent>
-          </Card>
+          <CreditCards />
         </TabsContent>
 
         <TabsContent value="activity">
-          <Card>
-            <CardHeader>
-              <CardTitle>📊 Usage Activity</CardTitle>
-              <CardDescription>
-                View your daily usage and limits
-              </CardDescription>
-            </CardHeader>
-            <CardContent>
-              <div className="text-center text-gray-600">
-                Usage tracking will be displayed here
-              </div>
-            </CardContent>
-          </Card>
+          <div className="space-y-6">
+            <Card>
+              <CardHeader>
+                <CardTitle>📊 Usage Activity</CardTitle>
+                <CardDescription>
+                  View your daily usage and limits
+                </CardDescription>
+              </CardHeader>
+              <CardContent>
+                <UsageIndicator />
+              </CardContent>
+            </Card>
+          </div>
         </TabsContent>
       </Tabs>
     </div>

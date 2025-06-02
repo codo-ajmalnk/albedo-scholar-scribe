@@ -3,10 +3,11 @@ import { useUsageTracking } from '@/hooks/useUsageTracking';
 import { Card, CardContent, CardHeader, CardTitle } from '@/components/ui/card';
 import { Progress } from '@/components/ui/progress';
 import { Badge } from '@/components/ui/badge';
-import { MessageSquare, Image, Upload, Search } from 'lucide-react';
+import { Button } from '@/components/ui/button';
+import { MessageSquare, Image, Upload, Search, Crown } from 'lucide-react';
 
 const UsageIndicator = () => {
-  const { usage, getRemainingUsage, FREE_LIMITS, loading } = useUsageTracking();
+  const { usage, getRemainingUsage, planLimits, userPlan, loading } = useUsageTracking();
 
   if (loading) return null;
 
@@ -16,39 +17,53 @@ const UsageIndicator = () => {
       icon: MessageSquare,
       label: 'Chat Messages',
       color: 'bg-blue-500',
+      limit: planLimits.chat_limit,
     },
     {
       type: 'image_generation' as const,
       icon: Image,
       label: 'Image Generation',
       color: 'bg-purple-500',
+      limit: planLimits.image_generation_limit,
     },
     {
       type: 'image_upload' as const,
       icon: Upload,
       label: 'Image Uploads',
       color: 'bg-green-500',
+      limit: planLimits.image_upload_limit,
     },
     {
       type: 'deep_research' as const,
       icon: Search,
       label: 'Deep Research',
       color: 'bg-orange-500',
+      limit: planLimits.deep_research_limit,
     },
   ];
+
+  const handleUpgrade = () => {
+    // This would navigate to the pricing page or open upgrade modal
+    console.log('Upgrade clicked');
+  };
 
   return (
     <Card className="w-full">
       <CardHeader>
-        <CardTitle className="text-lg">Daily Usage</CardTitle>
+        <div className="flex items-center justify-between">
+          <CardTitle className="text-lg">Daily Usage</CardTitle>
+          <Badge variant={userPlan === 'free' ? 'secondary' : userPlan === 'gold' ? 'default' : 'destructive'} className="capitalize">
+            {userPlan} Plan
+          </Badge>
+        </div>
       </CardHeader>
       <CardContent className="space-y-4">
-        {usageItems.map(({ type, icon: Icon, label, color }) => {
+        {usageItems.map(({ type, icon: Icon, label, color, limit }) => {
           const current = usage[type];
-          const limit = FREE_LIMITS[type];
           const remaining = getRemainingUsage(type);
           const percentage = remaining === 999 ? 100 : (current / limit) * 100;
-          const isUnlimited = remaining === 999;
+          const isUnlimited = limit >= 999999;
+          const isAtLimit = current >= limit && !isUnlimited;
 
           return (
             <div key={type} className="space-y-2">
@@ -57,7 +72,7 @@ const UsageIndicator = () => {
                   <Icon className="h-4 w-4" />
                   <span className="text-sm font-medium">{label}</span>
                 </div>
-                <Badge variant={isUnlimited ? "default" : current >= limit ? "destructive" : "secondary"}>
+                <Badge variant={isUnlimited ? "default" : isAtLimit ? "destructive" : "secondary"}>
                   {isUnlimited ? 'Unlimited' : `${remaining} left`}
                 </Badge>
               </div>
@@ -69,9 +84,28 @@ const UsageIndicator = () => {
                   </p>
                 </div>
               )}
+              {isAtLimit && userPlan === 'free' && (
+                <div className="text-xs text-orange-600 bg-orange-50 p-2 rounded">
+                  Limit reached! Upgrade to get more access.
+                </div>
+              )}
             </div>
           );
         })}
+        
+        {userPlan === 'free' && (
+          <div className="pt-4 border-t">
+            <Button 
+              onClick={handleUpgrade}
+              className="w-full" 
+              variant="outline"
+              size="sm"
+            >
+              <Crown className="h-4 w-4 mr-2" />
+              Upgrade Your Plan
+            </Button>
+          </div>
+        )}
       </CardContent>
     </Card>
   );

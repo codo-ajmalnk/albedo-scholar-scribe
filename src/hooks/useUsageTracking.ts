@@ -12,12 +12,14 @@ interface DailyUsage {
   deep_research: number;
 }
 
-const FREE_LIMITS = {
-  chat: 50,
-  image_generation: 4,
-  image_upload: 4,
-  deep_research: 0, // Changed to 0 - only available with purchased credits
-};
+interface PlanLimits {
+  chat_limit: number;
+  image_generation_limit: number;
+  image_upload_limit: number;
+  deep_research_limit: number;
+  price: number;
+  duration_months: number;
+}
 
 export const useUsageTracking = () => {
   const [usage, setUsage] = useState<DailyUsage>({
@@ -26,6 +28,15 @@ export const useUsageTracking = () => {
     image_upload: 0,
     deep_research: 0,
   });
+  const [planLimits, setPlanLimits] = useState<PlanLimits>({
+    chat_limit: 25,
+    image_generation_limit: 2,
+    image_upload_limit: 4,
+    deep_research_limit: 2,
+    price: 0,
+    duration_months: 0,
+  });
+  const [userPlan, setUserPlan] = useState<string>('free');
   const [loading, setLoading] = useState(true);
   const { user } = useAuth();
   const { isAdmin } = useAdmin();
@@ -34,8 +45,39 @@ export const useUsageTracking = () => {
   useEffect(() => {
     if (user) {
       loadTodayUsage();
+      loadUserPlan();
     }
   }, [user]);
+
+  const loadUserPlan = async () => {
+    if (!user) return;
+
+    try {
+      const { data: subscription, error } = await supabase
+        .from('user_subscriptions')
+        .select('subscription_plan')
+        .eq('user_id', user.id)
+        .single();
+
+      if (error && error.code !== 'PGRST116') throw error;
+
+      const plan = subscription?.subscription_plan || 'free';
+      setUserPlan(plan);
+
+      // Load plan limits
+      const { data: limits, error: limitsError } = await supabase
+        .from('plan_limits')
+        .select('*')
+        .eq('plan_type', plan)
+        .single();
+
+      if (limitsError) throw limitsError;
+
+      setPlanLimits(limits);
+    } catch (error: any) {
+      console.error('Error loading user plan:', error);
+    }
+  };
 
   const loadTodayUsage = async () => {
     if (!user) return;
@@ -72,17 +114,8 @@ export const useUsageTracking = () => {
     if (isAdmin) return true; // Admin has unlimited access
 
     const currentUsage = usage[type];
-    const limit = FREE_LIMITS[type];
-    
-    // Special handling for deep research - only available with purchased credits
-    if (type === 'deep_research' && limit === 0) {
-      toast({
-        title: "Deep Research requires credits",
-        description: "This feature is only available with purchased research credits. Please upgrade your account.",
-        variant: "destructive",
-      });
-      return false;
-    }
+    const limitKey = `${type}_limit` as keyof PlanLimits;
+    const limit = planLimits[limitKey] as number;
     
     if (currentUsage >= limit) {
       toast({
@@ -119,21 +152,21 @@ export const useUsageTracking = () => {
   const getRemainingUsage = (type: keyof DailyUsage): number => {
     if (isAdmin) return 999; // Show unlimited for admin
     
-    // For deep research, return 0 since it requires purchased credits
-    if (type === 'deep_research' && FREE_LIMITS[type] === 0) {
-      return 0;
-    }
+    const limitKey = `${type}_limit` as keyof PlanLimits;
+    const limit = planLimits[limitKey] as number;
     
-    return Math.max(0, FREE_LIMITS[type] - usage[type]);
+    return Math.max(0, limit - usage[type]);
   };
 
   return {
     usage,
+    planLimits,
+    userPlan,
     loading,
     checkLimit,
     incrementUsage,
     getRemainingUsage,
     loadTodayUsage,
-    FREE_LIMITS,
+    loadUserPlan,
   };
 };

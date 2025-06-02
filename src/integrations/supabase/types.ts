@@ -99,6 +99,42 @@ export type Database = {
         }
         Relationships: []
       }
+      plan_limits: {
+        Row: {
+          chat_limit: number | null
+          created_at: string | null
+          deep_research_limit: number | null
+          duration_months: number | null
+          id: string
+          image_generation_limit: number | null
+          image_upload_limit: number | null
+          plan_type: string
+          price: number | null
+        }
+        Insert: {
+          chat_limit?: number | null
+          created_at?: string | null
+          deep_research_limit?: number | null
+          duration_months?: number | null
+          id?: string
+          image_generation_limit?: number | null
+          image_upload_limit?: number | null
+          plan_type: string
+          price?: number | null
+        }
+        Update: {
+          chat_limit?: number | null
+          created_at?: string | null
+          deep_research_limit?: number | null
+          duration_months?: number | null
+          id?: string
+          image_generation_limit?: number | null
+          image_upload_limit?: number | null
+          plan_type?: string
+          price?: number | null
+        }
+        Relationships: []
+      }
       profiles: {
         Row: {
           avatar_url: string | null
@@ -158,6 +194,7 @@ export type Database = {
       }
       user_profiles: {
         Row: {
+          albedo_name: string | null
           bio: string | null
           created_at: string | null
           date_of_birth: string | null
@@ -172,6 +209,7 @@ export type Database = {
           username: string | null
         }
         Insert: {
+          albedo_name?: string | null
           bio?: string | null
           created_at?: string | null
           date_of_birth?: string | null
@@ -186,6 +224,7 @@ export type Database = {
           username?: string | null
         }
         Update: {
+          albedo_name?: string | null
           bio?: string | null
           created_at?: string | null
           date_of_birth?: string | null
@@ -205,8 +244,11 @@ export type Database = {
         Row: {
           created_at: string | null
           credits: number | null
+          discount_percentage: number | null
+          expires_at: string | null
           id: string
           is_active: boolean | null
+          price: number | null
           subscription_end_date: string | null
           subscription_plan:
             | Database["public"]["Enums"]["subscription_plan"]
@@ -218,8 +260,11 @@ export type Database = {
         Insert: {
           created_at?: string | null
           credits?: number | null
+          discount_percentage?: number | null
+          expires_at?: string | null
           id?: string
           is_active?: boolean | null
+          price?: number | null
           subscription_end_date?: string | null
           subscription_plan?:
             | Database["public"]["Enums"]["subscription_plan"]
@@ -231,8 +276,11 @@ export type Database = {
         Update: {
           created_at?: string | null
           credits?: number | null
+          discount_percentage?: number | null
+          expires_at?: string | null
           id?: string
           is_active?: boolean | null
+          price?: number | null
           subscription_end_date?: string | null
           subscription_plan?:
             | Database["public"]["Enums"]["subscription_plan"]
@@ -266,7 +314,7 @@ export type Database = {
     }
     Enums: {
       gender_type: "male" | "female" | "other" | "prefer_not_to_say"
-      subscription_plan: "free" | "pro" | "unlimited"
+      subscription_plan: "free" | "pro" | "unlimited" | "gold" | "diamond"
       usage_type: "chat" | "image_generation" | "image_upload" | "deep_research"
     }
     CompositeTypes: {
@@ -384,7 +432,7 @@ export const Constants = {
   public: {
     Enums: {
       gender_type: ["male", "female", "other", "prefer_not_to_say"],
-      subscription_plan: ["free", "pro", "unlimited"],
+      subscription_plan: ["free", "pro", "unlimited", "gold", "diamond"],
       usage_type: ["chat", "image_generation", "image_upload", "deep_research"],
     },
   },
