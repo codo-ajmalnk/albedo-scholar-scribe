@@ -49,7 +49,6 @@ const Index = () => {
     setCurrentChatId,
     createNewChat,
     updateChatMessages,
-    renameChat,
     getCurrentChat,
     deleteChat
   } = useChatHistory();
@@ -115,10 +114,6 @@ const Index = () => {
     setCurrentChatId(chatId);
   };
 
-  const handleRenameChat = (chatId: string, newTitle: string) => {
-    renameChat(chatId, newTitle);
-  };
-
   // Allow access if user is authenticated OR if user is admin
   if (!user && !isAdmin) {
     return null;
@@ -131,7 +126,6 @@ const Index = () => {
         currentChatId={currentChatId}
         onNewChat={handleNewChat}
         onSelectChat={handleSelectChat}
-        onRenameChat={handleRenameChat}
         onDeleteChat={deleteChat}
       />
       
