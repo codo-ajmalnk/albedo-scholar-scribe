@@ -1,5 +1,5 @@
 
-import { useState } from 'react';
+import { useState, useEffect } from 'react';
 import { useUserProfile } from '@/hooks/useUserProfile';
 import { Button } from '@/components/ui/button';
 import { Input } from '@/components/ui/input';
@@ -15,18 +15,18 @@ import UsageIndicator from './UsageIndicator';
 const ProfileSettings = () => {
   const { profile, subscription, loading, updateProfile } = useUserProfile();
   const [formData, setFormData] = useState({
-    name: profile?.name || '',
-    username: profile?.username || '',
-    albedo_name: profile?.albedo_name || 'Albedo',
-    phone_number: profile?.phone_number || '',
-    date_of_birth: profile?.date_of_birth || '',
-    gender: profile?.gender || '' as 'male' | 'female' | 'other' | 'prefer_not_to_say' | '',
-    location: profile?.location || '',
-    bio: profile?.bio || '',
+    name: '',
+    username: '',
+    albedo_name: 'Albedo',
+    phone_number: '',
+    date_of_birth: '',
+    gender: '' as 'male' | 'female' | 'other' | 'prefer_not_to_say' | '',
+    location: '',
+    bio: '',
   });
 
   // Update form data when profile loads
-  useState(() => {
+  useEffect(() => {
     if (profile) {
       setFormData({
         name: profile.name || '',
@@ -39,7 +39,7 @@ const ProfileSettings = () => {
         bio: profile.bio || '',
       });
     }
-  });
+  }, [profile]);
 
   const handleSubmit = async (e: React.FormEvent) => {
     e.preventDefault();
