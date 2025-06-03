@@ -11,6 +11,7 @@ import { Tabs, TabsContent, TabsList, TabsTrigger } from '@/components/ui/tabs';
 import { User, Shield, CreditCard, Activity } from 'lucide-react';
 import CreditCards from './CreditCards';
 import UsageIndicator from './UsageIndicator';
+import SecuritySettings from './SecuritySettings';
 
 const ProfileSettings = () => {
   const { profile, subscription, loading, updateProfile } = useUserProfile();
@@ -69,7 +70,7 @@ const ProfileSettings = () => {
   }
 
   return (
-    <div className="max-w-4xl mx-auto p-6 space-y-6">
+    <div className="space-y-6">
       <div className="flex items-center space-x-2 mb-6">
         <User className="h-6 w-6" />
         <h1 className="text-2xl font-bold">Profile Settings</h1>
@@ -202,29 +203,7 @@ const ProfileSettings = () => {
               </CardDescription>
             </CardHeader>
             <CardContent>
-              <div className="space-y-4">
-                <div className="flex items-center justify-between p-4 border rounded-lg">
-                  <div>
-                    <h3 className="font-medium">Two-factor authentication (2FA)</h3>
-                    <p className="text-sm text-gray-600">Add an extra layer of security</p>
-                  </div>
-                  <Button variant="outline">Setup 2FA</Button>
-                </div>
-                <div className="flex items-center justify-between p-4 border rounded-lg">
-                  <div>
-                    <h3 className="font-medium">Login Activity</h3>
-                    <p className="text-sm text-gray-600">View recent login activity</p>
-                  </div>
-                  <Button variant="outline">View Activity</Button>
-                </div>
-                <div className="flex items-center justify-between p-4 border rounded-lg">
-                  <div>
-                    <h3 className="font-medium">Change Password</h3>
-                    <p className="text-sm text-gray-600">Update your account password</p>
-                  </div>
-                  <Button variant="outline">Change Password</Button>
-                </div>
-              </div>
+              <SecuritySettings />
             </CardContent>
           </Card>
         </TabsContent>

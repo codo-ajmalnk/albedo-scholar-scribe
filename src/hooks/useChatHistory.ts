@@ -19,23 +19,26 @@ export const useChatHistory = () => {
   useEffect(() => {
     const savedChats = localStorage.getItem('albedo-chat-history');
     if (savedChats) {
-      const parsed = JSON.parse(savedChats).map((chat: any) => ({
-        ...chat,
-        createdAt: new Date(chat.createdAt),
-        updatedAt: new Date(chat.updatedAt)
-      }));
-      setChatSessions(parsed);
-      if (parsed.length > 0) {
-        setCurrentChatId(parsed[0].id);
+      try {
+        const parsed = JSON.parse(savedChats).map((chat: any) => ({
+          ...chat,
+          createdAt: new Date(chat.createdAt),
+          updatedAt: new Date(chat.updatedAt)
+        }));
+        setChatSessions(parsed);
+        if (parsed.length > 0 && !currentChatId) {
+          setCurrentChatId(parsed[0].id);
+        }
+      } catch (error) {
+        console.error('Error parsing chat history:', error);
+        localStorage.removeItem('albedo-chat-history');
       }
     }
   }, []);
 
   // Save to localStorage when sessions change
   useEffect(() => {
-    if (chatSessions.length > 0) {
-      localStorage.setItem('albedo-chat-history', JSON.stringify(chatSessions));
-    }
+    localStorage.setItem('albedo-chat-history', JSON.stringify(chatSessions));
   }, [chatSessions]);
 
   const createNewChat = () => {
@@ -75,7 +78,13 @@ export const useChatHistory = () => {
   };
 
   const deleteChat = (chatId: string) => {
-    setChatSessions(prev => prev.filter(chat => chat.id !== chatId));
+    setChatSessions(prev => {
+      const filtered = prev.filter(chat => chat.id !== chatId);
+      // Update localStorage immediately
+      localStorage.setItem('albedo-chat-history', JSON.stringify(filtered));
+      return filtered;
+    });
+    
     if (currentChatId === chatId) {
       const remaining = chatSessions.filter(chat => chat.id !== chatId);
       setCurrentChatId(remaining.length > 0 ? remaining[0].id : null);
