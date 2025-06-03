@@ -9,20 +9,29 @@ import {
   DropdownMenuTrigger,
 } from '@/components/ui/dropdown-menu';
 import { useAuth } from '@/hooks/useAuth';
+import { useAdmin } from '@/hooks/useAdmin';
 import { useToast } from '@/hooks/use-toast';
 import { Link } from 'react-router-dom';
 
 const UserMenu = () => {
   const { user, signOut } = useAuth();
+  const { isAdmin, setIsAdmin } = useAdmin();
   const { toast } = useToast();
 
   const handleSignOut = async () => {
     try {
       await signOut();
+      
+      // Clear admin state if it was set
+      if (isAdmin) {
+        setIsAdmin(false);
+      }
+      
       toast({
         title: "Signed out successfully! 👋",
         description: "You have been logged out. See you next time!",
       });
+      
       // Force page reload to ensure clean state
       window.location.href = '/auth';
     } catch (error: any) {
@@ -35,7 +44,7 @@ const UserMenu = () => {
     }
   };
 
-  if (!user) return null;
+  if (!user && !isAdmin) return null;
 
   return (
     <DropdownMenu>
@@ -46,8 +55,12 @@ const UserMenu = () => {
       </DropdownMenuTrigger>
       <DropdownMenuContent align="end" className="w-56 bg-white border shadow-lg">
         <DropdownMenuItem disabled className="flex-col items-start">
-          <span className="font-medium">{user.email}</span>
-          <span className="text-xs text-gray-500">Signed in</span>
+          <span className="font-medium">
+            {isAdmin ? '👑 Admin Access' : user?.email}
+          </span>
+          <span className="text-xs text-gray-500">
+            {isAdmin ? 'Your Majesty' : 'Signed in'}
+          </span>
         </DropdownMenuItem>
         
         <DropdownMenuSeparator />

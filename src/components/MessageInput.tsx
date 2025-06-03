@@ -1,7 +1,7 @@
 
 import { Send, Upload, ImageIcon } from 'lucide-react';
 import { Button } from '@/components/ui/button';
-import { Input } from '@/components/ui/input';
+import { Textarea } from '@/components/ui/textarea';
 import { Card } from '@/components/ui/card';
 import { useRef } from 'react';
 import VoiceInput from './VoiceInput';
@@ -72,13 +72,23 @@ const MessageInput = ({
         
         <VoiceInput onVoiceInput={handleVoiceInput} disabled={isLoading} />
         
-        <Input
+        <Textarea
           placeholder="Ask Albedo Educator anything! 🎓 Upload images or speak your question..."
           value={inputMessage}
           onChange={(e) => setInputMessage(e.target.value)}
           onKeyPress={handleKeyPress}
-          className="flex-1 border-green-200 focus:border-green-400 bg-white/90 rounded-xl"
+          className="flex-1 border-green-200 focus:border-green-400 bg-white/90 rounded-xl resize-none min-h-[40px] max-h-[120px]"
           disabled={isLoading}
+          rows={1}
+          style={{
+            height: 'auto',
+            minHeight: '40px',
+          }}
+          onInput={(e) => {
+            const target = e.target as HTMLTextAreaElement;
+            target.style.height = 'auto';
+            target.style.height = Math.min(target.scrollHeight, 120) + 'px';
+          }}
         />
         
         <Button 

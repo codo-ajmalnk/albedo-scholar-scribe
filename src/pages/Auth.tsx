@@ -64,8 +64,8 @@ const Auth = () => {
     try {
       await signIn(email, password);
       toast({
-        title: "Welcome back!",
-        description: "You have successfully signed in.",
+        title: "Welcome back! 🎉",
+        description: "You have successfully signed in to Albedo AI.",
       });
       navigate('/');
     } catch (error: any) {
@@ -85,7 +85,7 @@ const Auth = () => {
     try {
       await signUp(email, password, fullName);
       toast({
-        title: "Account created!",
+        title: "Account created! 🎊",
         description: "Please check your email to verify your account.",
       });
     } catch (error: any) {
@@ -118,16 +118,17 @@ const Auth = () => {
         setAdminPassword('');
         
         toast({
-          title: "Admin Access Granted",
-          description: "Welcome, Admin! You now have admin privileges.",
+          title: "👑 Royal Access Granted",
+          description: "Welcome, Your Majesty! You now have administrative privileges in Albedo AI.",
+          duration: 5000,
         });
         
         // Navigate to main page immediately
         navigate('/');
       } else {
         toast({
-          title: "Access Denied",
-          description: "Incorrect admin password. Please try again.",
+          title: "Access Denied ❌",
+          description: "Incorrect admin password. Please verify your credentials.",
           variant: "destructive",
         });
         setAdminPassword('');
@@ -135,7 +136,7 @@ const Auth = () => {
     } catch (error) {
       toast({
         title: "Error",
-        description: "An error occurred during admin login. Please try again.",
+        description: "An error occurred during admin authentication. Please try again.",
         variant: "destructive",
       });
     } finally {
@@ -145,10 +146,12 @@ const Auth = () => {
 
   return (
     <div className="min-h-screen bg-gradient-to-br from-green-50 via-blue-50 to-purple-50 flex items-center justify-center p-4">
-      <Card className="w-full max-w-md">
-        <CardHeader className="text-center">
-          <CardTitle className="text-2xl font-bold">Albedo AI</CardTitle>
-          <CardDescription>Your AI study companion</CardDescription>
+      <Card className="w-full max-w-md shadow-xl border-0">
+        <CardHeader className="text-center pb-2">
+          <CardTitle className="text-3xl font-bold bg-gradient-to-r from-green-600 to-blue-600 bg-clip-text text-transparent">
+            Albedo AI
+          </CardTitle>
+          <CardDescription className="text-lg">Your intelligent study companion</CardDescription>
         </CardHeader>
         <CardContent>
           <Tabs defaultValue="signin" className="space-y-4">
@@ -167,6 +170,7 @@ const Auth = () => {
                     value={email}
                     onChange={(e) => setEmail(e.target.value)}
                     required
+                    className="h-11"
                   />
                 </div>
                 <div className="space-y-2">
@@ -177,9 +181,10 @@ const Auth = () => {
                     value={password}
                     onChange={(e) => setPassword(e.target.value)}
                     required
+                    className="h-11"
                   />
                 </div>
-                <Button type="submit" className="w-full" disabled={loading}>
+                <Button type="submit" className="w-full h-11 text-lg" disabled={loading}>
                   {loading ? "Signing in..." : "Sign In"}
                 </Button>
               </form>
@@ -194,6 +199,7 @@ const Auth = () => {
                     type="text"
                     value={fullName}
                     onChange={(e) => setFullName(e.target.value)}
+                    className="h-11"
                   />
                 </div>
                 <div className="space-y-2">
@@ -204,6 +210,7 @@ const Auth = () => {
                     value={email}
                     onChange={(e) => setEmail(e.target.value)}
                     required
+                    className="h-11"
                   />
                 </div>
                 <div className="space-y-2">
@@ -214,9 +221,10 @@ const Auth = () => {
                     value={password}
                     onChange={(e) => setPassword(e.target.value)}
                     required
+                    className="h-11"
                   />
                 </div>
-                <Button type="submit" className="w-full" disabled={loading}>
+                <Button type="submit" className="w-full h-11 text-lg" disabled={loading}>
                   {loading ? "Creating account..." : "Sign Up"}
                 </Button>
               </form>
@@ -227,30 +235,31 @@ const Auth = () => {
           <div className="mt-6 pt-6 border-t border-gray-200">
             <Dialog open={isAdminDialogOpen} onOpenChange={setIsAdminDialogOpen}>
               <DialogTrigger asChild>
-                <Button variant="outline" className="w-full" size="sm">
+                <Button variant="outline" className="w-full" size="lg">
                   <Settings className="h-4 w-4 mr-2" />
-                  Admin Access
+                  👑 Royal Admin Access
                 </Button>
               </DialogTrigger>
-              <DialogContent>
+              <DialogContent className="sm:max-w-md">
                 <DialogHeader>
-                  <DialogTitle>Admin Login</DialogTitle>
+                  <DialogTitle className="text-center text-xl">👑 Royal Admin Access</DialogTitle>
                 </DialogHeader>
-                <div className="space-y-4">
+                <div className="space-y-4 py-4">
                   <Input
                     type="password"
-                    placeholder="Enter admin password"
+                    placeholder="Enter the royal password..."
                     value={adminPassword}
                     onChange={(e) => setAdminPassword(e.target.value)}
                     onKeyPress={(e) => e.key === 'Enter' && !adminLoading && handleAdminLogin()}
                     disabled={adminLoading}
+                    className="h-11"
                   />
                   <Button 
                     onClick={handleAdminLogin} 
-                    className="w-full" 
+                    className="w-full h-11 bg-gradient-to-r from-purple-600 to-blue-600 hover:from-purple-700 hover:to-blue-700" 
                     disabled={adminLoading}
                   >
-                    {adminLoading ? "Logging in..." : "Login as Admin"}
+                    {adminLoading ? "Verifying..." : "👑 Enter as Admin"}
                   </Button>
                 </div>
               </DialogContent>

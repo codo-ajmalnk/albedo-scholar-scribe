@@ -6,6 +6,7 @@ import { User, LogOut } from 'lucide-react';
 import { Link } from 'react-router-dom';
 import { Button } from '@/components/ui/button';
 import { useAuth } from '@/hooks/useAuth';
+import { useAdmin } from '@/hooks/useAdmin';
 import { useToast } from '@/hooks/use-toast';
 
 interface ChatHeaderProps {
@@ -14,11 +15,18 @@ interface ChatHeaderProps {
 
 const ChatHeader = ({ messageCount }: ChatHeaderProps) => {
   const { signOut } = useAuth();
+  const { isAdmin, setIsAdmin } = useAdmin();
   const { toast } = useToast();
 
   const handleQuickSignOut = async () => {
     try {
       await signOut();
+      
+      // Clear admin state if it was set
+      if (isAdmin) {
+        setIsAdmin(false);
+      }
+      
       toast({
         title: "Signed out successfully! 👋",
         description: "You have been logged out. See you next time!",
@@ -39,9 +47,16 @@ const ChatHeader = ({ messageCount }: ChatHeaderProps) => {
       <div className="flex items-center space-x-4">
         <AlbedoAvatar size="sm" />
         <div>
-          <h1 className="font-semibold text-lg text-gray-900">Albedo AI</h1>
+          <h1 className="font-semibold text-lg text-gray-900">
+            {isAdmin ? '👑 Albedo AI - Admin Mode' : 'Albedo AI'}
+          </h1>
           <p className="text-sm text-gray-600">
-            {messageCount > 0 ? `${messageCount} messages in this conversation` : 'Ready to help you learn and research'}
+            {isAdmin 
+              ? 'Your Majesty, how may I serve you today?' 
+              : messageCount > 0 
+                ? `${messageCount} messages in this conversation` 
+                : 'Ready to help you learn and research'
+            }
           </p>
         </div>
       </div>
