@@ -73,6 +73,14 @@ export const useChatHistory = () => {
     ));
   };
 
+  const renameChat = (chatId: string, newTitle: string) => {
+    setChatSessions(prev => prev.map(chat => 
+      chat.id === chatId 
+        ? { ...chat, title: newTitle, updatedAt: new Date() }
+        : chat
+    ));
+  };
+
   const getCurrentChat = () => {
     return chatSessions.find(chat => chat.id === currentChatId);
   };
@@ -97,6 +105,7 @@ export const useChatHistory = () => {
     setCurrentChatId,
     createNewChat,
     updateChatMessages,
+    renameChat,
     getCurrentChat,
     deleteChat
   };

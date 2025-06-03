@@ -2,11 +2,11 @@
 import { useState } from 'react';
 import { Button } from '@/components/ui/button';
 import { ScrollArea } from '@/components/ui/scroll-area';
-import { Card } from '@/components/ui/card';
-import { Trash2, MessageSquare, Calendar, Copy, Menu, X } from 'lucide-react';
+import { Input } from '@/components/ui/input';
+import { Dialog, DialogContent, DialogHeader, DialogTitle, DialogTrigger } from '@/components/ui/dialog';
+import { MessageSquare, Plus, Trash2, Edit2, Check, X } from 'lucide-react';
 import { ChatSession } from '@/hooks/useChatHistory';
-import NewChatButton from './NewChatButton';
-import { useToast } from '@/hooks/use-toast';
+import { cn } from '@/lib/utils';
 
 interface ChatSidebarProps {
   chatSessions: ChatSession[];
@@ -14,6 +14,7 @@ interface ChatSidebarProps {
   onNewChat: () => void;
   onSelectChat: (chatId: string) => void;
   onDeleteChat: (chatId: string) => void;
+  onRenameChat?: (chatId: string, newTitle: string) => void;
 }
 
 const ChatSidebar = ({
@@ -21,134 +22,149 @@ const ChatSidebar = ({
   currentChatId,
   onNewChat,
   onSelectChat,
-  onDeleteChat
+  onDeleteChat,
+  onRenameChat
 }: ChatSidebarProps) => {
-  const [isCollapsed, setIsCollapsed] = useState(false);
-  const { toast } = useToast();
+  const [editingChatId, setEditingChatId] = useState<string | null>(null);
+  const [editTitle, setEditTitle] = useState('');
 
-  const formatDate = (date: Date) => {
-    const now = new Date();
-    const diffInDays = Math.floor((now.getTime() - date.getTime()) / (1000 * 60 * 60 * 24));
-    
-    if (diffInDays === 0) {
-      return `Today ${date.toLocaleTimeString([], { hour: '2-digit', minute: '2-digit' })}`;
-    } else if (diffInDays === 1) {
-      return `Yesterday ${date.toLocaleTimeString([], { hour: '2-digit', minute: '2-digit' })}`;
-    } else {
-      return date.toLocaleDateString();
-    }
+  const handleStartEdit = (chat: ChatSession) => {
+    setEditingChatId(chat.id);
+    setEditTitle(chat.title);
   };
 
-  const copyChat = (session: ChatSession, e: React.MouseEvent) => {
-    e.stopPropagation();
-    const chatContent = session.messages.map(msg => 
-      `${msg.sender === 'user' ? 'You' : 'AI'}: ${msg.content}`
-    ).join('\n\n');
-    
-    navigator.clipboard.writeText(chatContent).then(() => {
-      toast({
-        title: "Chat copied!",
-        description: "Chat history has been copied to clipboard.",
-      });
-    }).catch(() => {
-      toast({
-        title: "Copy failed",
-        description: "Could not copy chat to clipboard.",
-        variant: "destructive",
-      });
-    });
+  const handleSaveEdit = () => {
+    if (editingChatId && editTitle.trim() && onRenameChat) {
+      onRenameChat(editingChatId, editTitle.trim());
+    }
+    setEditingChatId(null);
+    setEditTitle('');
+  };
+
+  const handleCancelEdit = () => {
+    setEditingChatId(null);
+    setEditTitle('');
+  };
+
+  const truncateTitle = (title: string, maxLength: number = 30) => {
+    if (title.length <= maxLength) return title;
+    return title.slice(0, maxLength) + '...';
   };
 
   return (
-    <>
-      {/* Toggle Button - Always visible */}
-      <Button
-        variant="ghost"
-        size="sm"
-        onClick={() => setIsCollapsed(!isCollapsed)}
-        className="fixed top-4 left-4 z-50 bg-white shadow-md hover:shadow-lg"
-      >
-        {isCollapsed ? <Menu className="w-4 h-4" /> : <X className="w-4 h-4" />}
-      </Button>
+    <div className="w-64 bg-white border-r border-gray-200 flex flex-col h-full">
+      <div className="p-4 border-b border-gray-200">
+        <Button
+          onClick={onNewChat}
+          className="w-full flex items-center space-x-2 bg-blue-600 hover:bg-blue-700"
+        >
+          <Plus className="h-4 w-4" />
+          <span>New Chat</span>
+        </Button>
+      </div>
 
-      {/* Sidebar */}
-      <div className={`bg-white border-r border-gray-200 flex flex-col transition-all duration-300 ${
-        isCollapsed ? 'w-0 opacity-0 pointer-events-none' : 'w-80 opacity-100'
-      }`}>
-        <div className="p-4 border-b border-gray-200 mt-12">
-          <h2 className="text-lg font-semibold text-gray-800 mb-3">Chat History</h2>
-          <NewChatButton onNewChat={onNewChat} className="w-full" />
-        </div>
-
-        <ScrollArea className="flex-1">
-          <div className="p-2 space-y-2">
-            {chatSessions.map((session) => (
-              <Card
-                key={session.id}
-                className={`p-3 cursor-pointer transition-all duration-200 hover:shadow-md group ${
-                  currentChatId === session.id
-                    ? 'bg-blue-50 border-blue-200 shadow-sm'
-                    : 'hover:bg-gray-50'
-                }`}
-                onClick={() => onSelectChat(session.id)}
-              >
-                <div className="space-y-2">
-                  <div className="flex items-start justify-between">
-                    <h3 className="text-sm font-medium text-gray-800 line-clamp-2 flex-1 pr-2">
-                      {session.title}
-                    </h3>
-                    
-                    {/* Action buttons - show on hover */}
-                    <div className="flex items-center space-x-1 opacity-0 group-hover:opacity-100 transition-opacity">
-                      <Button
-                        variant="ghost"
-                        size="sm"
-                        onClick={(e) => copyChat(session, e)}
-                        className="p-1 h-6 w-6 text-gray-400 hover:text-blue-500"
-                        title="Copy chat"
-                      >
-                        <Copy className="w-3 h-3" />
-                      </Button>
-                      <Button
-                        variant="ghost"
-                        size="sm"
-                        onClick={(e) => {
-                          e.stopPropagation();
-                          onDeleteChat(session.id);
-                        }}
-                        className="p-1 h-6 w-6 text-gray-400 hover:text-red-500"
-                        title="Delete chat"
-                      >
-                        <Trash2 className="w-3 h-3" />
-                      </Button>
+      <ScrollArea className="flex-1">
+        <div className="p-2 space-y-1">
+          {chatSessions.map((chat) => (
+            <div
+              key={chat.id}
+              className={cn(
+                "group relative p-3 rounded-lg cursor-pointer transition-colors",
+                currentChatId === chat.id
+                  ? "bg-blue-50 border border-blue-200"
+                  : "hover:bg-gray-50"
+              )}
+            >
+              {editingChatId === chat.id ? (
+                <div className="flex items-center space-x-2">
+                  <Input
+                    value={editTitle}
+                    onChange={(e) => setEditTitle(e.target.value)}
+                    className="flex-1 h-8 text-sm"
+                    onKeyDown={(e) => {
+                      if (e.key === 'Enter') handleSaveEdit();
+                      if (e.key === 'Escape') handleCancelEdit();
+                    }}
+                    autoFocus
+                  />
+                  <Button
+                    size="sm"
+                    variant="ghost"
+                    onClick={handleSaveEdit}
+                    className="h-8 w-8 p-0"
+                  >
+                    <Check className="h-3 w-3" />
+                  </Button>
+                  <Button
+                    size="sm"
+                    variant="ghost"
+                    onClick={handleCancelEdit}
+                    className="h-8 w-8 p-0"
+                  >
+                    <X className="h-3 w-3" />
+                  </Button>
+                </div>
+              ) : (
+                <>
+                  <div
+                    onClick={() => onSelectChat(chat.id)}
+                    className="flex-1"
+                  >
+                    <div className="flex items-start space-x-2">
+                      <MessageSquare className="h-4 w-4 mt-0.5 text-gray-500" />
+                      <div className="flex-1 min-w-0">
+                        <p className="text-sm font-medium text-gray-900 truncate">
+                          {truncateTitle(chat.title)}
+                        </p>
+                        <div className="flex items-center space-x-2 mt-1">
+                          <p className="text-xs text-gray-500">
+                            {chat.messageCount} messages
+                          </p>
+                          {/* Text length indicator bar */}
+                          <div className="flex-1 bg-gray-200 rounded-full h-1 max-w-16">
+                            <div 
+                              className="bg-blue-500 h-1 rounded-full" 
+                              style={{ 
+                                width: `${Math.min((chat.title.length / 50) * 100, 100)}%` 
+                              }}
+                            />
+                          </div>
+                        </div>
+                      </div>
                     </div>
                   </div>
                   
-                  <div className="flex items-center justify-between text-xs text-gray-500">
-                    <div className="flex items-center space-x-1">
-                      <Calendar className="w-3 h-3" />
-                      <span>{formatDate(session.updatedAt)}</span>
-                    </div>
-                    <div className="flex items-center space-x-1">
-                      <MessageSquare className="w-3 h-3" />
-                      <span>{session.messageCount} msgs</span>
-                    </div>
+                  <div className="absolute right-2 top-2 opacity-0 group-hover:opacity-100 transition-opacity flex space-x-1">
+                    <Button
+                      size="sm"
+                      variant="ghost"
+                      onClick={(e) => {
+                        e.stopPropagation();
+                        handleStartEdit(chat);
+                      }}
+                      className="h-6 w-6 p-0"
+                    >
+                      <Edit2 className="h-3 w-3" />
+                    </Button>
+                    <Button
+                      size="sm"
+                      variant="ghost"
+                      onClick={(e) => {
+                        e.stopPropagation();
+                        onDeleteChat(chat.id);
+                      }}
+                      className="h-6 w-6 p-0 text-red-600 hover:text-red-800"
+                    >
+                      <Trash2 className="h-3 w-3" />
+                    </Button>
                   </div>
-                </div>
-              </Card>
-            ))}
-            
-            {chatSessions.length === 0 && (
-              <div className="text-center py-8 text-gray-500">
-                <MessageSquare className="w-12 h-12 mx-auto mb-3 text-gray-300" />
-                <p className="text-sm">No chats yet</p>
-                <p className="text-xs">Start a new conversation!</p>
-              </div>
-            )}
-          </div>
-        </ScrollArea>
-      </div>
-    </>
+                </>
+              )}
+            </div>
+          ))}
+        </div>
+      </ScrollArea>
+    </div>
   );
 };
 

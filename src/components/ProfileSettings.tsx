@@ -1,20 +1,22 @@
-
 import { useState, useEffect } from 'react';
 import { useUserProfile } from '@/hooks/useUserProfile';
 import { Button } from '@/components/ui/button';
 import { Input } from '@/components/ui/input';
 import { Label } from '@/components/ui/label';
-import { Textarea } from '@/components/ui/textarea';
 import { Card, CardContent, CardDescription, CardHeader, CardTitle } from '@/components/ui/card';
 import { Select, SelectContent, SelectItem, SelectTrigger, SelectValue } from '@/components/ui/select';
 import { Tabs, TabsContent, TabsList, TabsTrigger } from '@/components/ui/tabs';
 import { User, Shield, CreditCard, Activity } from 'lucide-react';
+import { useToast } from '@/hooks/use-toast';
 import CreditCards from './CreditCards';
 import UsageIndicator from './UsageIndicator';
 import SecuritySettings from './SecuritySettings';
+import ActivityPage from './ActivityPage';
+import { TextInputWithLength, TextareaWithLength } from './TextInputWithLength';
 
 const ProfileSettings = () => {
   const { profile, subscription, loading, updateProfile } = useUserProfile();
+  const { toast } = useToast();
   const [formData, setFormData] = useState({
     name: '',
     username: '',
@@ -25,6 +27,8 @@ const ProfileSettings = () => {
     location: '',
     bio: '',
   });
+  const [previousGender, setPreviousGender] = useState<string>('');
+  const [previousAlbedoName, setPreviousAlbedoName] = useState<string>('Albedo');
 
   // Update form data when profile loads
   useEffect(() => {
@@ -44,6 +48,32 @@ const ProfileSettings = () => {
 
   const handleSubmit = async (e: React.FormEvent) => {
     e.preventDefault();
+    
+    // Check for gender change
+    if (formData.gender !== previousGender && formData.gender) {
+      const genderResponses = {
+        male: "Hello sir! I've updated your gender preference. How may I assist you today?",
+        female: "Hello madam! I've updated your gender preference. How may I assist you today?",
+        other: "Hello! I've updated your gender preference. How may I assist you today?",
+        prefer_not_to_say: "Hello! I've updated your preference. How may I assist you today?"
+      };
+      
+      toast({
+        title: `${formData.albedo_name || 'Albedo'} says:`,
+        description: genderResponses[formData.gender],
+      });
+      setPreviousGender(formData.gender);
+    }
+
+    // Check for Albedo name change
+    if (formData.albedo_name !== previousAlbedoName && formData.albedo_name) {
+      toast({
+        title: `${formData.albedo_name} says:`,
+        description: `Hello! My name is now ${formData.albedo_name}. It's nice to meet you with my new name!`,
+      });
+      setPreviousAlbedoName(formData.albedo_name);
+    }
+
     const updateData = {
       ...formData,
       gender: formData.gender as 'male' | 'female' | 'other' | 'prefer_not_to_say' | undefined
@@ -109,29 +139,32 @@ const ProfileSettings = () => {
                 <div className="grid grid-cols-1 md:grid-cols-2 gap-4">
                   <div>
                     <Label htmlFor="name">Name</Label>
-                    <Input
+                    <TextInputWithLength
                       id="name"
                       value={formData.name}
                       onChange={(e) => handleInputChange('name', e.target.value)}
                       placeholder="Your full name"
+                      maxLength={50}
                     />
                   </div>
                   <div>
                     <Label htmlFor="username">Username</Label>
-                    <Input
+                    <TextInputWithLength
                       id="username"
                       value={formData.username}
                       onChange={(e) => handleInputChange('username', e.target.value)}
                       placeholder="Your username"
+                      maxLength={30}
                     />
                   </div>
                   <div>
                     <Label htmlFor="albedo_name">Albedo's Name</Label>
-                    <Input
+                    <TextInputWithLength
                       id="albedo_name"
                       value={formData.albedo_name}
                       onChange={(e) => handleInputChange('albedo_name', e.target.value)}
                       placeholder="Customize your AI assistant's name"
+                      maxLength={25}
                     />
                   </div>
                   <div>
@@ -168,22 +201,24 @@ const ProfileSettings = () => {
                   </div>
                   <div>
                     <Label htmlFor="location">Location</Label>
-                    <Input
+                    <TextInputWithLength
                       id="location"
                       value={formData.location}
                       onChange={(e) => handleInputChange('location', e.target.value)}
                       placeholder="City, Country"
+                      maxLength={50}
                     />
                   </div>
                 </div>
                 <div>
                   <Label htmlFor="bio">Bio</Label>
-                  <Textarea
+                  <TextareaWithLength
                     id="bio"
                     value={formData.bio}
                     onChange={(e) => handleInputChange('bio', e.target.value)}
                     placeholder="Tell us about yourself..."
                     rows={3}
+                    maxLength={200}
                   />
                 </div>
                 <Button type="submit" className="w-full">
@@ -213,19 +248,7 @@ const ProfileSettings = () => {
         </TabsContent>
 
         <TabsContent value="activity">
-          <div className="space-y-6">
-            <Card>
-              <CardHeader>
-                <CardTitle>📊 Usage Activity</CardTitle>
-                <CardDescription>
-                  View your daily usage and limits
-                </CardDescription>
-              </CardHeader>
-              <CardContent>
-                <UsageIndicator />
-              </CardContent>
-            </Card>
-          </div>
+          <ActivityPage />
         </TabsContent>
       </Tabs>
     </div>
