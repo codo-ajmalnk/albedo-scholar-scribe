@@ -34,7 +34,7 @@ export const useChatHistory = () => {
         localStorage.removeItem('albedo-chat-history');
       }
     }
-  }, []);
+  }, [currentChatId]);
 
   // Save to localStorage when sessions change
   useEffect(() => {
@@ -80,13 +80,21 @@ export const useChatHistory = () => {
   const deleteChat = (chatId: string) => {
     setChatSessions(prev => {
       const filtered = prev.filter(chat => chat.id !== chatId);
+      
+      // If we're deleting the current chat, switch to another chat or create a new one
+      if (currentChatId === chatId) {
+        if (filtered.length > 0) {
+          setCurrentChatId(filtered[0].id);
+        } else {
+          // No chats left, clear current chat
+          setCurrentChatId(null);
+        }
+      }
+      
+      // Save the updated list immediately
+      localStorage.setItem('albedo-chat-history', JSON.stringify(filtered));
       return filtered;
     });
-    
-    if (currentChatId === chatId) {
-      const remaining = chatSessions.filter(chat => chat.id !== chatId);
-      setCurrentChatId(remaining.length > 0 ? remaining[0].id : null);
-    }
   };
 
   return {

@@ -50,7 +50,6 @@ const ChatMessage = ({
 
   const handleCopyText = async () => {
     try {
-      // Clean the content by removing HTML tags and extra formatting
       const cleanContent = message.content
         .replace(/<br\s*\/?>/gi, '\n')
         .replace(/<[^>]*>/g, '')
@@ -66,7 +65,6 @@ const ChatMessage = ({
         description: "Message content has been copied to your clipboard.",
       });
     } catch (error) {
-      // Fallback for older browsers
       const textArea = document.createElement('textarea');
       textArea.value = message.content.replace(/<br\s*\/?>/gi, '\n').replace(/<[^>]*>/g, '');
       document.body.appendChild(textArea);
@@ -160,15 +158,16 @@ const ChatMessage = ({
           </div>
         </div>
 
+        {/* Always show action buttons for assistant messages */}
         {!isEditing && message.type === 'assistant' && (
-          <div className="flex flex-wrap gap-2 mt-3 justify-end">
+          <div className="flex flex-wrap gap-2 mt-4 pt-3 border-t border-gray-100">
             <Button
               variant="outline"
               size="sm"
               onClick={() => handleFeedback('like')}
-              className={message.feedback === 'like' ? 'bg-green-50 border-green-200' : ''}
+              className={`text-xs ${message.feedback === 'like' ? 'bg-green-50 border-green-200' : ''}`}
             >
-              <ThumbsUp className={`h-4 w-4 mr-1 ${message.feedback === 'like' ? 'text-green-500' : ''}`} />
+              <ThumbsUp className={`h-3 w-3 mr-1 ${message.feedback === 'like' ? 'text-green-500' : ''}`} />
               {message.feedback === 'like' ? 'Liked' : 'Like'}
             </Button>
             
@@ -176,9 +175,9 @@ const ChatMessage = ({
               variant="outline"
               size="sm"
               onClick={() => handleFeedback('dislike')}
-              className={message.feedback === 'dislike' ? 'bg-red-50 border-red-200' : ''}
+              className={`text-xs ${message.feedback === 'dislike' ? 'bg-red-50 border-red-200' : ''}`}
             >
-              <ThumbsDown className={`h-4 w-4 mr-1 ${message.feedback === 'dislike' ? 'text-red-500' : ''}`} />
+              <ThumbsDown className={`h-3 w-3 mr-1 ${message.feedback === 'dislike' ? 'text-red-500' : ''}`} />
               {message.feedback === 'dislike' ? 'Disliked' : 'Dislike'}
             </Button>
 
@@ -186,8 +185,9 @@ const ChatMessage = ({
               variant="outline"
               size="sm"
               onClick={handleCopyText}
+              className="text-xs"
             >
-              <Copy className="h-4 w-4 mr-1" />
+              <Copy className="h-3 w-3 mr-1" />
               Copy
             </Button>
             
@@ -195,8 +195,9 @@ const ChatMessage = ({
               variant="outline"
               size="sm"
               onClick={handleGeneratePDF}
+              className="text-xs"
             >
-              <FileDown className="h-4 w-4 mr-1" />
+              <FileDown className="h-3 w-3 mr-1" />
               PDF
             </Button>
             
@@ -204,11 +205,12 @@ const ChatMessage = ({
               variant="outline"
               size="sm"
               onClick={handleSpeakText}
+              className="text-xs"
             >
               {isPlaying && !isPaused ? (
-                <PauseCircle className="h-4 w-4 mr-1" />
+                <PauseCircle className="h-3 w-3 mr-1" />
               ) : (
-                <PlayCircle className="h-4 w-4 mr-1" />
+                <PlayCircle className="h-3 w-3 mr-1" />
               )}
               {isPlaying && !isPaused ? 'Pause' : isPaused ? 'Resume' : 'Listen'}
             </Button>
@@ -217,19 +219,22 @@ const ChatMessage = ({
               variant="outline"
               size="sm"
               onClick={() => onRegenerateResponse(message.id)}
+              className="text-xs"
             >
-              <RotateCcw className="h-4 w-4 mr-1" />
+              <RotateCcw className="h-3 w-3 mr-1" />
               Regenerate
             </Button>
           </div>
         )}
 
+        {/* User message actions */}
         {!isEditing && message.type === 'user' && (
           <div className="flex justify-end mt-3 gap-2">
             <Button
               variant="ghost"
               size="sm"
               onClick={handleCopyText}
+              className="text-xs"
             >
               <Copy className="h-3 w-3 mr-1" />
               Copy
@@ -238,6 +243,7 @@ const ChatMessage = ({
               variant="ghost"
               size="sm"
               onClick={() => onStartEdit(message.id)}
+              className="text-xs"
             >
               <Pencil className="h-3 w-3 mr-1" />
               Edit
