@@ -83,29 +83,15 @@
   }
   body {
     @apply bg-background text-foreground;
+    overflow-x: hidden;
   }
-}
-
-/* Simplified, performance-optimized animations */
-@keyframes gentleFlyAway {
-  0% {
-    transform: translateY(0) scale(1);
-    opacity: 1;
-  }
-  100% {
-    transform: translateY(-100px) scale(0.8);
-    opacity: 0;
-  }
-}
-
-.animate-flyAway {
-  animation: gentleFlyAway 1s ease-out forwards;
 }
 
 /* Performance optimizations */
 * {
   -webkit-font-smoothing: antialiased;
   -moz-osx-font-smoothing: grayscale;
+  box-sizing: border-box;
 }
 
 .no-select {
@@ -115,11 +101,18 @@
   user-select: none;
 }
 
-/* Reduce motion for users who prefer it */
+/* Remove all problematic animations */
 @media (prefers-reduced-motion: reduce) {
-  * {
+  *, *::before, *::after {
     animation-duration: 0.01ms !important;
     animation-iteration-count: 1 !important;
     transition-duration: 0.01ms !important;
   }
+}
+
+/* Override any transform or animation properties that might cause shaking */
+* {
+  will-change: auto !important;
+  backface-visibility: hidden;
+  perspective: 1000px;
 }

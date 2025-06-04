@@ -91,17 +91,13 @@ const Index = () => {
   };
 
   const handleNewChat = () => {
-    // Store current messages for the flying effect (limited for performance)
-    setPreviousMessages([...messages].slice(0, 4));
-    
-    // Start the leaves effect
-    setIsLeavesEffectActive(true);
+    // Directly create new chat without animation effect
+    const newChatId = createNewChat();
+    setCurrentChatId(newChatId);
   };
 
   const handleLeavesEffectComplete = () => {
-    // Create new chat after the effect completes
-    const newChatId = createNewChat();
-    setCurrentChatId(newChatId);
+    // This is kept for compatibility but won't be called
     setIsLeavesEffectActive(false);
     setPreviousMessages([]);
   };
@@ -116,7 +112,7 @@ const Index = () => {
   }
 
   return (
-    <div className="min-h-screen bg-gradient-to-br from-green-50 via-blue-50 to-purple-50 flex relative">
+    <div className="min-h-screen bg-gradient-to-br from-green-50 via-blue-50 to-purple-50 flex">
       <ChatSidebar
         chatSessions={chatSessions}
         currentChatId={currentChatId}

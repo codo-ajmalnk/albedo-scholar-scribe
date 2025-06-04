@@ -13,9 +13,9 @@ const TypingIndicator = () => {
             <div className="flex items-center space-x-1 mt-1">
               <span className="text-xs text-green-600">thinking</span>
               <div className="flex space-x-1">
-                <div className="w-1.5 h-1.5 bg-green-400 rounded-full animate-pulse"></div>
-                <div className="w-1.5 h-1.5 bg-green-400 rounded-full animate-pulse" style={{ animationDelay: '0.3s' }}></div>
-                <div className="w-1.5 h-1.5 bg-green-400 rounded-full animate-pulse" style={{ animationDelay: '0.6s' }}></div>
+                <div className="w-1.5 h-1.5 bg-green-400 rounded-full opacity-60"></div>
+                <div className="w-1.5 h-1.5 bg-green-400 rounded-full opacity-80"></div>
+                <div className="w-1.5 h-1.5 bg-green-400 rounded-full opacity-100"></div>
               </div>
             </div>
           </div>
