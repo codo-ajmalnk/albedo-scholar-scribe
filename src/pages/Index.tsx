@@ -1,3 +1,4 @@
+
 import { useState, useEffect } from 'react';
 import ChatHeader from '@/components/ChatHeader';
 import ChatContainer from '@/components/ChatContainer';
@@ -12,14 +13,11 @@ import { useFileHandling } from '@/hooks/useFileHandling';
 import { useChatHistory } from '@/hooks/useChatHistory';
 import { useAuth } from '@/hooks/useAuth';
 import { useAdmin } from '@/hooks/useAdmin';
-import { Button } from '@/components/ui/button';
-import { Search } from 'lucide-react';
 
 const Index = () => {
   const [inputMessage, setInputMessage] = useState('');
   const [isLeavesEffectActive, setIsLeavesEffectActive] = useState(false);
   const [previousMessages, setPreviousMessages] = useState<any[]>([]);
-  const [showDeepResearch, setShowDeepResearch] = useState(false);
   const { user } = useAuth();
   const { isAdmin } = useAdmin();
   
@@ -59,7 +57,6 @@ const Index = () => {
     if (currentChat) {
       loadMessages(currentChat.messages);
     } else if (chatSessions.length === 0) {
-      // Create first chat if no chats exist
       createNewChat();
     }
   }, [currentChatId, chatSessions.length]);
@@ -86,8 +83,7 @@ const Index = () => {
       const newChatId = createNewChat();
       setCurrentChatId(newChatId);
     }
-    sendMessage(query, [], true); // true indicates this is a research query
-    setShowDeepResearch(false);
+    sendMessage(query, [], true);
   };
 
   const handleEditMessage = (messageId: string, newContent: string) => {
@@ -95,8 +91,8 @@ const Index = () => {
   };
 
   const handleNewChat = () => {
-    // Store current messages for the flying effect
-    setPreviousMessages([...messages]);
+    // Store current messages for the flying effect (limited for performance)
+    setPreviousMessages([...messages].slice(0, 4));
     
     // Start the leaves effect
     setIsLeavesEffectActive(true);

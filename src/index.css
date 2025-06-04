@@ -86,29 +86,40 @@
   }
 }
 
-@keyframes flyAway {
+/* Simplified, performance-optimized animations */
+@keyframes gentleFlyAway {
   0% {
-    transform: translateY(0) rotate(0deg) scale(1);
-    opacity: 0.8;
-  }
-  25% {
-    transform: translateY(-50px) rotate(90deg) scale(0.9);
-    opacity: 0.7;
-  }
-  50% {
-    transform: translateY(-150px) rotate(180deg) scale(0.7);
-    opacity: 0.5;
-  }
-  75% {
-    transform: translateY(-250px) rotate(270deg) scale(0.5);
-    opacity: 0.3;
+    transform: translateY(0) scale(1);
+    opacity: 1;
   }
   100% {
-    transform: translateY(-400px) rotate(360deg) scale(0.2);
+    transform: translateY(-100px) scale(0.8);
     opacity: 0;
   }
 }
 
 .animate-flyAway {
-  animation: flyAway 1.8s ease-out forwards;
+  animation: gentleFlyAway 1s ease-out forwards;
+}
+
+/* Performance optimizations */
+* {
+  -webkit-font-smoothing: antialiased;
+  -moz-osx-font-smoothing: grayscale;
+}
+
+.no-select {
+  -webkit-user-select: none;
+  -moz-user-select: none;
+  -ms-user-select: none;
+  user-select: none;
+}
+
+/* Reduce motion for users who prefer it */
+@media (prefers-reduced-motion: reduce) {
+  * {
+    animation-duration: 0.01ms !important;
+    animation-iteration-count: 1 !important;
+    transition-duration: 0.01ms !important;
+  }
 }
