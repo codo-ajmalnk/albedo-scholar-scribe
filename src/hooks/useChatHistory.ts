@@ -80,8 +80,6 @@ export const useChatHistory = () => {
   const deleteChat = (chatId: string) => {
     setChatSessions(prev => {
       const filtered = prev.filter(chat => chat.id !== chatId);
-      // Update localStorage immediately
-      localStorage.setItem('albedo-chat-history', JSON.stringify(filtered));
       return filtered;
     });
     

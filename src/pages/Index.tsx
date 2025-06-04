@@ -155,27 +155,10 @@ const Index = () => {
               <div className="w-80 hidden lg:block">
                 <div className="sticky top-4 space-y-4">
                   <UsageIndicator />
-                  {!showDeepResearch && (
-                    <Button
-                      onClick={() => setShowDeepResearch(true)}
-                      className="w-full p-3 text-left border rounded-lg hover:bg-gray-50 transition-colors"
-                      variant="outline"
-                    >
-                      <div className="flex items-center space-x-2">
-                        <Search className="h-4 w-4" />
-                        <span className="text-sm font-medium">Deep Research</span>
-                      </div>
-                      <p className="text-xs text-gray-500 mt-1">
-                        Get comprehensive analysis
-                      </p>
-                    </Button>
-                  )}
-                  {showDeepResearch && (
-                    <DeepResearchTool 
-                      onResearch={handleDeepResearch}
-                      isLoading={isLoading}
-                    />
-                  )}
+                  <DeepResearchTool 
+                    onResearch={handleDeepResearch}
+                    isLoading={isLoading}
+                  />
                 </div>
               </div>
             </div>

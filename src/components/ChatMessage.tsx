@@ -4,7 +4,7 @@ import { Card } from '@/components/ui/card';
 import { Button } from '@/components/ui/button';
 import { Textarea } from '@/components/ui/textarea';
 import { Avatar, AvatarFallback, AvatarImage } from '@/components/ui/avatar';
-import { ThumbsUp, ThumbsDown, FileDown, PlayCircle, PauseCircle, Pencil, Repeat, Copy } from 'lucide-react';
+import { ThumbsUp, ThumbsDown, FileDown, PlayCircle, PauseCircle, Pencil, RotateCcw, Copy } from 'lucide-react';
 import AlbedoAvatar from './AlbedoAvatar';
 import { Message } from '@/hooks/useMessageHandling';
 import { useTextToSpeech } from '@/hooks/useTextToSpeech';
@@ -197,7 +197,7 @@ const ChatMessage = ({
               onClick={handleGeneratePDF}
             >
               <FileDown className="h-4 w-4 mr-1" />
-              Save PDF
+              PDF
             </Button>
             
             <Button
@@ -218,7 +218,7 @@ const ChatMessage = ({
               size="sm"
               onClick={() => onRegenerateResponse(message.id)}
             >
-              <Repeat className="h-4 w-4 mr-1" />
+              <RotateCcw className="h-4 w-4 mr-1" />
               Regenerate
             </Button>
           </div>

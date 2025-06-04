@@ -1,9 +1,10 @@
 
 import { Button } from '@/components/ui/button';
 import { ScrollArea } from '@/components/ui/scroll-area';
-import { MessageSquare, Plus, Trash2 } from 'lucide-react';
+import { MessageSquare, Plus, Trash2, ChevronLeft, ChevronRight } from 'lucide-react';
 import { ChatSession } from '@/hooks/useChatHistory';
 import { cn } from '@/lib/utils';
+import { useState } from 'react';
 
 interface ChatSidebarProps {
   chatSessions: ChatSession[];
@@ -21,14 +22,54 @@ const ChatSidebar = ({
   onSelectChat,
   onDeleteChat
 }: ChatSidebarProps) => {
+  const [isCollapsed, setIsCollapsed] = useState(false);
+
   const truncateTitle = (title: string, maxLength: number = 30) => {
     if (title.length <= maxLength) return title;
     return title.slice(0, maxLength) + '...';
   };
 
+  if (isCollapsed) {
+    return (
+      <div className="w-12 bg-white border-r border-gray-200 flex flex-col h-full">
+        <div className="p-2 border-b border-gray-200">
+          <Button
+            onClick={() => setIsCollapsed(false)}
+            size="sm"
+            variant="ghost"
+            className="w-full p-2"
+          >
+            <ChevronRight className="h-4 w-4" />
+          </Button>
+        </div>
+        <div className="p-2">
+          <Button
+            onClick={onNewChat}
+            size="sm"
+            variant="ghost"
+            className="w-full p-2"
+          >
+            <Plus className="h-4 w-4" />
+          </Button>
+        </div>
+      </div>
+    );
+  }
+
   return (
     <div className="w-64 bg-white border-r border-gray-200 flex flex-col h-full">
-      <div className="p-4 border-b border-gray-200">
+      <div className="p-4 border-b border-gray-200 space-y-2">
+        <div className="flex items-center justify-between">
+          <h2 className="font-semibold text-sm text-gray-700">Chats</h2>
+          <Button
+            onClick={() => setIsCollapsed(true)}
+            size="sm"
+            variant="ghost"
+            className="p-1"
+          >
+            <ChevronLeft className="h-4 w-4" />
+          </Button>
+        </div>
         <Button
           onClick={onNewChat}
           className="w-full flex items-center space-x-2 bg-blue-600 hover:bg-blue-700"
