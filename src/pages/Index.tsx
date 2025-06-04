@@ -90,14 +90,13 @@ const Index = () => {
     editMessage(messageId, newContent);
   };
 
+  // Optimized new chat handler - no animations, immediate response
   const handleNewChat = () => {
-    // Directly create new chat without animation effect
     const newChatId = createNewChat();
     setCurrentChatId(newChatId);
   };
 
   const handleLeavesEffectComplete = () => {
-    // This is kept for compatibility but won't be called
     setIsLeavesEffectActive(false);
     setPreviousMessages([]);
   };

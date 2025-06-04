@@ -28,7 +28,7 @@ const Auth = () => {
   // Redirect if already authenticated or admin (but only after auth loading is complete)
   useEffect(() => {
     if (!authLoading && (user || isAdmin)) {
-      navigate('/');
+      navigate('/', { replace: true });
     }
   }, [user, isAdmin, authLoading, navigate]);
 
@@ -77,7 +77,8 @@ const Auth = () => {
         title: "Welcome back! 🎉",
         description: "You have successfully signed in to Albedo AI.",
       });
-      navigate('/');
+      // Force navigate to main chat page
+      navigate('/', { replace: true });
     } catch (error: any) {
       console.error('Sign in error:', error);
       let errorMessage = "An error occurred during sign in.";
@@ -172,8 +173,8 @@ const Auth = () => {
           duration: 5000,
         });
         
-        // Navigate to main page immediately
-        navigate('/');
+        // Navigate to main chat page, not admin page
+        navigate('/', { replace: true });
       } else {
         toast({
           title: "Access Denied ❌",
