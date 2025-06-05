@@ -106,7 +106,7 @@ const ChatSidebar = ({
                         <p className="text-sm font-medium text-gray-900 truncate">
                           {truncateTitle(chat.title)}
                         </p>
-                        <div className="flex items-center space-x-2 mt-1 bg-[#fafffa]">
+                        <div className="flex items-center space-x-2 mt-1 bg-lime-50">
                           <p className="text-xs text-gray-600">
                             {chat.messageCount} messages
                           </p>
