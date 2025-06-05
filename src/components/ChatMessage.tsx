@@ -4,7 +4,7 @@ import { Card } from '@/components/ui/card';
 import { Button } from '@/components/ui/button';
 import { Textarea } from '@/components/ui/textarea';
 import { Avatar, AvatarFallback, AvatarImage } from '@/components/ui/avatar';
-import { ThumbsUp, ThumbsDown, FileDown, PlayCircle, PauseCircle, Pencil, RotateCcw, Copy } from 'lucide-react';
+import { ThumbsUp, ThumbsDown, FileDown, PlayCircle, PauseCircle, Pencil, RotateCcw, Copy, Star } from 'lucide-react';
 import AlbedoAvatar from './AlbedoAvatar';
 import { Message } from '@/hooks/useMessageHandling';
 import { useTextToSpeech } from '@/hooks/useTextToSpeech';
@@ -63,6 +63,7 @@ const ChatMessage = ({
       toast({
         title: "Copied! 📋",
         description: "Message content has been copied to your clipboard.",
+        duration: 1000,
       });
     } catch (error) {
       const textArea = document.createElement('textarea');
@@ -75,6 +76,7 @@ const ChatMessage = ({
       toast({
         title: "Copied! 📋",
         description: "Message content has been copied to your clipboard.",
+        duration: 1000,
       });
     }
   };
@@ -89,20 +91,25 @@ const ChatMessage = ({
     if (feedback === 'like') {
       toast({
         title: "Thank you! 😊",
-        description: "Albedo is happy to help! Your feedback helps me improve.",
+        description: "Albedo appreciates your feedback!",
+        duration: 1000,
       });
     } else {
       toast({
         title: "Sorry about that! 😔",
-        description: "Albedo apologizes for not meeting your expectations. I'll try to do better!",
+        description: "I'll try to do better!",
         variant: "destructive",
+        duration: 1000,
       });
     }
   };
 
   return (
     <div className="py-2">
-      <Card className={`p-4 ${message.type === 'assistant' ? 'bg-blue-50 border-blue-100' : ''}`}>
+      <Card className={`p-4 ${message.type === 'assistant' 
+        ? 'bg-gradient-to-r from-green-50 to-blue-50 border border-green-200' 
+        : 'bg-white border border-gray-200 shadow-sm'
+      }`}>
         <div className="flex items-start gap-3">
           {message.type === 'user' ? (
             <Avatar className="h-8 w-8">
@@ -158,96 +165,62 @@ const ChatMessage = ({
           </div>
         </div>
 
-        {/* Always show action buttons for assistant messages */}
-        {!isEditing && message.type === 'assistant' && (
-          <div className="flex flex-wrap gap-2 mt-4 pt-3 border-t border-gray-100">
+        {/* Bottom action buttons for all messages */}
+        {!isEditing && (
+          <div className="flex justify-end gap-1 mt-3 pt-2 border-t border-gray-100">
             <Button
-              variant="outline"
-              size="sm"
-              onClick={() => handleFeedback('like')}
-              className={`text-xs ${message.feedback === 'like' ? 'bg-green-50 border-green-200' : ''}`}
-            >
-              <ThumbsUp className={`h-3 w-3 mr-1 ${message.feedback === 'like' ? 'text-green-500' : ''}`} />
-              {message.feedback === 'like' ? 'Liked' : 'Like'}
-            </Button>
-            
-            <Button
-              variant="outline"
-              size="sm"
-              onClick={() => handleFeedback('dislike')}
-              className={`text-xs ${message.feedback === 'dislike' ? 'bg-red-50 border-red-200' : ''}`}
-            >
-              <ThumbsDown className={`h-3 w-3 mr-1 ${message.feedback === 'dislike' ? 'text-red-500' : ''}`} />
-              {message.feedback === 'dislike' ? 'Disliked' : 'Dislike'}
-            </Button>
-
-            <Button
-              variant="outline"
+              variant="ghost"
               size="sm"
               onClick={handleCopyText}
-              className="text-xs"
+              className="h-8 px-2 text-xs text-gray-600 hover:text-blue-600"
             >
-              <Copy className="h-3 w-3 mr-1" />
-              Copy
+              <Copy className="h-3 w-3" />
             </Button>
             
             <Button
-              variant="outline"
+              variant="ghost"
               size="sm"
               onClick={handleGeneratePDF}
-              className="text-xs"
+              className="h-8 px-2 text-xs text-gray-600 hover:text-blue-600"
             >
-              <FileDown className="h-3 w-3 mr-1" />
-              PDF
+              <FileDown className="h-3 w-3" />
             </Button>
-            
-            <Button
-              variant="outline"
-              size="sm"
-              onClick={handleSpeakText}
-              className="text-xs"
-            >
-              {isPlaying && !isPaused ? (
-                <PauseCircle className="h-3 w-3 mr-1" />
-              ) : (
-                <PlayCircle className="h-3 w-3 mr-1" />
-              )}
-              {isPlaying && !isPaused ? 'Pause' : isPaused ? 'Resume' : 'Listen'}
-            </Button>
-            
-            <Button
-              variant="outline"
-              size="sm"
-              onClick={() => onRegenerateResponse(message.id)}
-              className="text-xs"
-            >
-              <RotateCcw className="h-3 w-3 mr-1" />
-              Regenerate
-            </Button>
-          </div>
-        )}
 
-        {/* User message actions */}
-        {!isEditing && message.type === 'user' && (
-          <div className="flex justify-end mt-3 gap-2">
-            <Button
-              variant="ghost"
-              size="sm"
-              onClick={handleCopyText}
-              className="text-xs"
-            >
-              <Copy className="h-3 w-3 mr-1" />
-              Copy
-            </Button>
-            <Button
-              variant="ghost"
-              size="sm"
-              onClick={() => onStartEdit(message.id)}
-              className="text-xs"
-            >
-              <Pencil className="h-3 w-3 mr-1" />
-              Edit
-            </Button>
+            {message.type === 'assistant' && (
+              <>
+                <Button
+                  variant="ghost"
+                  size="sm"
+                  onClick={() => onRegenerateResponse(message.id)}
+                  className="h-8 px-2 text-xs text-gray-600 hover:text-blue-600"
+                >
+                  <RotateCcw className="h-3 w-3" />
+                </Button>
+                
+                <Button
+                  variant="ghost"
+                  size="sm"
+                  onClick={() => handleFeedback('like')}
+                  className={`h-8 px-2 text-xs ${message.feedback === 'like' 
+                    ? 'text-green-600 bg-green-50' 
+                    : 'text-gray-600 hover:text-green-600'
+                  }`}
+                >
+                  <Star className="h-3 w-3" />
+                </Button>
+              </>
+            )}
+
+            {message.type === 'user' && (
+              <Button
+                variant="ghost"
+                size="sm"
+                onClick={() => onStartEdit(message.id)}
+                className="h-8 px-2 text-xs text-gray-600 hover:text-blue-600"
+              >
+                <Pencil className="h-3 w-3" />
+              </Button>
+            )}
           </div>
         )}
       </Card>

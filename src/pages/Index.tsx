@@ -115,7 +115,7 @@ const Index = () => {
   }
 
   return (
-    <div className="min-h-screen bg-gradient-to-br from-green-50 via-blue-50 to-purple-50 flex">
+    <div className="min-h-screen bg-gradient-to-br from-green-100 via-blue-50 to-green-50 flex">
       <ChatSidebar
         chatSessions={chatSessions}
         currentChatId={currentChatId}
@@ -125,7 +125,7 @@ const Index = () => {
         onRenameChat={handleRenameChat}
       />
       
-      <div className="flex-1 flex flex-col w-full">
+      <div className="flex-1 flex flex-col w-full bg-white/30 backdrop-blur-sm">
         <ChatHeader messageCount={messages.length} />
         
         <div className="max-w-4xl mx-auto px-4 py-6 h-[calc(100vh-140px)] flex flex-col w-full">

@@ -17,7 +17,7 @@ const NewChatButton = ({ onNewChat, disabled = false, className = "" }: NewChatB
     toast({
       title: "✨ New Chat Created",
       description: "Ready for your questions!",
-      duration: 1500,
+      duration: 1000,
     });
   };
 
@@ -25,7 +25,7 @@ const NewChatButton = ({ onNewChat, disabled = false, className = "" }: NewChatB
     <Button
       onClick={handleNewChat}
       disabled={disabled}
-      className={`bg-gradient-to-r from-green-500 to-blue-500 hover:from-green-600 hover:to-blue-600 text-white shadow-sm hover:shadow-md ${className}`}
+      className={`bg-white border-2 border-blue-500 hover:bg-blue-50 text-blue-600 hover:text-blue-700 shadow-sm hover:shadow-md transition-all duration-200 ${className}`}
       size="lg"
     >
       <Plus className="w-5 h-5 mr-2" />
