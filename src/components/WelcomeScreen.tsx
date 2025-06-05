@@ -72,11 +72,11 @@ const WelcomeScreen = () => {
     <div className="text-center space-y-8 py-8">
       {/* Welcome Header */}
       <div className="space-y-4">
-        <div className="w-24 h-24 bg-gradient-to-r from-blue-500 to-purple-600 rounded-full flex items-center justify-center mx-auto shadow-lg">
+        <div className="w-24 h-24 bg-gradient-to-r from-green-500 to-blue-600 rounded-full flex items-center justify-center mx-auto shadow-lg border-2 border-blue-300">
           <GraduationCap className="w-12 h-12 text-white" />
         </div>
         <div>
-          <h2 className="text-4xl font-bold bg-gradient-to-r from-blue-600 to-purple-600 bg-clip-text text-transparent mb-3">
+          <h2 className="text-4xl font-bold bg-gradient-to-r from-green-600 to-blue-600 bg-clip-text text-transparent mb-3">
             Welcome to Albedo! 👋
           </h2>
           <p className="text-lg text-gray-600 max-w-3xl mx-auto leading-relaxed">
@@ -93,9 +93,9 @@ const WelcomeScreen = () => {
       {/* Enhanced Features Grid */}
       <div className="grid md:grid-cols-2 lg:grid-cols-3 gap-4 max-w-6xl mx-auto">
         {features.map((feature, index) => (
-          <Card key={index} className="p-6 bg-white/90 border-blue-200 hover:shadow-lg transition-all duration-300 hover:scale-105">
+          <Card key={index} className="p-6 bg-white/90 border-2 border-blue-200 hover:shadow-lg hover:border-blue-300">
             <div className="flex flex-col items-center text-center space-y-3">
-              <div className="w-14 h-14 bg-gradient-to-r from-blue-500 to-purple-600 rounded-xl flex items-center justify-center flex-shrink-0 shadow-md">
+              <div className="w-14 h-14 bg-gradient-to-r from-green-500 to-blue-600 rounded-xl flex items-center justify-center flex-shrink-0 shadow-md border border-blue-300">
                 <feature.icon className="w-7 h-7 text-white" />
               </div>
               <div>
@@ -115,7 +115,7 @@ const WelcomeScreen = () => {
         </h3>
         <div className="grid md:grid-cols-2 lg:grid-cols-3 gap-4 max-w-4xl mx-auto">
           {subjects.map((subject, index) => (
-            <Card key={index} className={`p-4 ${subject.color} border-none hover:shadow-md transition-all duration-200`}>
+            <Card key={index} className={`p-4 ${subject.color} border-2 border-blue-200 hover:shadow-md`}>
               <div className="text-center">
                 <div className="text-2xl mb-2">{subject.emoji}</div>
                 <h4 className="font-semibold mb-1">{subject.name}</h4>
@@ -127,15 +127,15 @@ const WelcomeScreen = () => {
       </div>
 
       {/* Example Questions */}
-      <Card className="max-w-4xl mx-auto p-6 bg-gradient-to-r from-blue-50 to-purple-50 border-blue-200">
+      <Card className="max-w-4xl mx-auto p-6 bg-gradient-to-r from-green-50 to-blue-50 border-2 border-blue-200">
         <h3 className="font-semibold text-gray-800 mb-4 text-xl">
           💡 Try asking me questions like these:
         </h3>
         <div className="grid md:grid-cols-2 gap-4">
           {exampleQuestions.map((example, index) => (
-            <div key={index} className="bg-white/80 rounded-lg p-4 text-left shadow-sm hover:shadow-md transition-shadow">
+            <div key={index} className="bg-white/80 rounded-lg p-4 text-left shadow-sm hover:shadow-md border border-blue-200">
               <div className="flex justify-between items-start mb-2">
-                <span className="text-xs px-2 py-1 bg-blue-100 text-blue-700 rounded-full font-medium">
+                <span className="text-xs px-2 py-1 bg-blue-100 text-blue-700 rounded-full font-medium border border-blue-200">
                   {example.subject}
                 </span>
                 <span className="text-xs text-gray-500">{example.level}</span>
@@ -145,7 +145,7 @@ const WelcomeScreen = () => {
           ))}
         </div>
         
-        <div className="mt-6 p-4 bg-white/70 rounded-lg">
+        <div className="mt-6 p-4 bg-white/70 rounded-lg border border-blue-200">
           <h4 className="font-medium text-gray-800 mb-2">✨ Pro Features:</h4>
           <div className="grid md:grid-cols-2 gap-2 text-sm text-gray-600">
             <div>• Upload images of questions for instant solutions</div>

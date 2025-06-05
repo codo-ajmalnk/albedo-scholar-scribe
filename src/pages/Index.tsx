@@ -18,6 +18,7 @@ const Index = () => {
   const [inputMessage, setInputMessage] = useState('');
   const [isLeavesEffectActive, setIsLeavesEffectActive] = useState(false);
   const [previousMessages, setPreviousMessages] = useState<any[]>([]);
+  const [showWelcome, setShowWelcome] = useState(true);
   const { user } = useAuth();
   const { isAdmin } = useAdmin();
   
@@ -57,8 +58,10 @@ const Index = () => {
     const currentChat = getCurrentChat();
     if (currentChat) {
       loadMessages(currentChat.messages);
+      setShowWelcome(false);
+    } else {
+      setShowWelcome(true);
     }
-    // Removed auto-creation of new chat to prevent refresh issues
   }, [currentChatId]);
 
   // Update chat history when messages change
@@ -76,6 +79,7 @@ const Index = () => {
     sendMessage(inputMessage, uploadedFiles);
     setInputMessage('');
     setUploadedFiles([]);
+    setShowWelcome(false);
   };
 
   const handleDeepResearch = (query: string) => {
@@ -84,16 +88,22 @@ const Index = () => {
       setCurrentChatId(newChatId);
     }
     sendMessage(query, [], true);
+    setShowWelcome(false);
   };
 
   const handleEditMessage = (messageId: string, newContent: string) => {
     editMessage(messageId, newContent);
   };
 
-  // Optimized new chat handler
   const handleNewChat = () => {
     const newChatId = createNewChat();
     setCurrentChatId(newChatId);
+    setShowWelcome(true);
+  };
+
+  const handleBackToHome = () => {
+    setShowWelcome(true);
+    setCurrentChatId(null);
   };
 
   const handleLeavesEffectComplete = () => {
@@ -103,6 +113,7 @@ const Index = () => {
 
   const handleSelectChat = (chatId: string) => {
     setCurrentChatId(chatId);
+    setShowWelcome(false);
   };
 
   const handleRenameChat = (chatId: string, newTitle: string) => {
@@ -116,20 +127,24 @@ const Index = () => {
 
   return (
     <div className="min-h-screen bg-gradient-to-br from-green-100 via-blue-50 to-green-50 flex">
-      <ChatSidebar
-        chatSessions={chatSessions}
-        currentChatId={currentChatId}
-        onNewChat={handleNewChat}
-        onSelectChat={handleSelectChat}
-        onDeleteChat={deleteChat}
-        onRenameChat={handleRenameChat}
-      />
+      <div className="border-r-2 border-blue-200">
+        <ChatSidebar
+          chatSessions={chatSessions}
+          currentChatId={currentChatId}
+          onNewChat={handleNewChat}
+          onSelectChat={handleSelectChat}
+          onDeleteChat={deleteChat}
+          onRenameChat={handleRenameChat}
+        />
+      </div>
       
       <div className="flex-1 flex flex-col w-full bg-white/30 backdrop-blur-sm">
-        <ChatHeader messageCount={messages.length} />
+        <div className="border-b-2 border-blue-200">
+          <ChatHeader messageCount={messages.length} />
+        </div>
         
         <div className="max-w-4xl mx-auto px-4 py-6 h-[calc(100vh-140px)] flex flex-col w-full">
-          {messages.length === 0 ? (
+          {showWelcome ? (
             <div className="flex-1 flex flex-col items-center justify-center">
               <WelcomeScreen />
             </div>
@@ -146,29 +161,36 @@ const Index = () => {
                   onRegenerateResponse={regenerateResponse}
                   onFeedback={setMessageFeedback}
                   onStartEdit={setEditingMessageId}
+                  onBackToHome={handleBackToHome}
                 />
               </div>
               <div className="w-80 hidden lg:block">
                 <div className="sticky top-4 space-y-4">
-                  <UsageIndicator />
-                  <DeepResearchTool 
-                    onResearch={handleDeepResearch}
-                    isLoading={isLoading}
-                  />
+                  <div className="border-2 border-blue-200 rounded-lg bg-white/50">
+                    <UsageIndicator />
+                  </div>
+                  <div className="border-2 border-blue-200 rounded-lg bg-white/50">
+                    <DeepResearchTool 
+                      onResearch={handleDeepResearch}
+                      isLoading={isLoading}
+                    />
+                  </div>
                 </div>
               </div>
             </div>
           )}
 
-          <MessageInput
-            inputMessage={inputMessage}
-            setInputMessage={setInputMessage}
-            uploadedFiles={uploadedFiles}
-            setUploadedFiles={setUploadedFiles}
-            onSendMessage={handleSendMessage}
-            isLoading={isLoading}
-            onFileUpload={handleFileUpload}
-          />
+          <div className="border-2 border-blue-200 rounded-lg bg-white/50 p-2">
+            <MessageInput
+              inputMessage={inputMessage}
+              setInputMessage={setInputMessage}
+              uploadedFiles={uploadedFiles}
+              setUploadedFiles={setUploadedFiles}
+              onSendMessage={handleSendMessage}
+              isLoading={isLoading}
+              onFileUpload={handleFileUpload}
+            />
+          </div>
         </div>
       </div>
 

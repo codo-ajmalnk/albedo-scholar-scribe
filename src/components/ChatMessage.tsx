@@ -105,23 +105,26 @@ const ChatMessage = ({
   };
 
   return (
-    <div className="py-2">
-      <Card className={`p-4 ${message.type === 'assistant' 
-        ? 'bg-gradient-to-r from-green-50 to-blue-50 border border-green-200' 
-        : 'bg-white border border-gray-200 shadow-sm'
-      }`}>
-        <div className="flex items-start gap-3">
-          {message.type === 'user' ? (
-            <Avatar className="h-8 w-8">
-              <AvatarFallback className="bg-blue-500 text-white">U</AvatarFallback>
-            </Avatar>
-          ) : (
+    <div className={`flex ${message.type === 'user' ? 'justify-end' : 'justify-start'} mb-2`}>
+      <div className={`flex items-start gap-2 max-w-[70%] ${message.type === 'user' ? 'flex-row-reverse' : 'flex-row'}`}>
+        {message.type === 'user' ? (
+          <Avatar className="h-6 w-6 flex-shrink-0">
+            <AvatarFallback className="bg-blue-500 text-white text-xs">U</AvatarFallback>
+          </Avatar>
+        ) : (
+          <div className="flex-shrink-0">
             <AlbedoAvatar />
-          )}
+          </div>
+        )}
 
-          <div className="flex-1">
+        <div className={`relative ${message.type === 'user' ? 'mr-2' : 'ml-2'}`}>
+          <Card className={`p-3 shadow-sm border-2 ${message.type === 'assistant' 
+            ? 'bg-white border-blue-200 rounded-tr-lg rounded-tl-lg rounded-bl-lg rounded-br-sm' 
+            : 'bg-blue-500 text-white border-blue-600 rounded-tl-lg rounded-tr-lg rounded-br-lg rounded-bl-sm'
+          }`}>
+            {/* Message header */}
             <div className="flex items-center gap-2 mb-1">
-              <span className="font-medium">
+              <span className={`text-xs font-medium ${message.type === 'user' ? 'text-blue-100' : 'text-gray-600'}`}>
                 {message.type === 'user' ? 'You' : 'Albedo AI'}
               </span>
               {message.subject && (
@@ -130,100 +133,103 @@ const ChatMessage = ({
                 </Badge>
               )}
               {message.isEdited && (
-                <span className="text-xs text-gray-500 italic">(edited)</span>
+                <span className={`text-xs italic ${message.type === 'user' ? 'text-blue-200' : 'text-gray-400'}`}>(edited)</span>
               )}
             </div>
 
+            {/* Message content */}
             {isEditing ? (
               <div className="space-y-2">
                 <Textarea
                   value={editedContent}
                   onChange={(e) => setEditedContent(e.target.value)}
-                  className="min-h-[100px] w-full"
+                  className="min-h-[60px] w-full text-sm"
                 />
                 <div className="flex justify-end gap-2">
                   <Button
                     variant="ghost"
                     size="sm"
                     onClick={() => onStartEdit('')}
+                    className="h-7 px-2 text-xs"
                   >
                     Cancel
                   </Button>
                   <Button
                     size="sm"
                     onClick={() => onEditMessage(message.id, editedContent)}
+                    className="h-7 px-2 text-xs"
                   >
-                    Save Changes
+                    Save
                   </Button>
                 </div>
               </div>
             ) : (
-              <div className="prose prose-sm max-w-none">
+              <div className={`text-sm leading-relaxed ${message.type === 'user' ? 'text-white' : 'text-gray-800'}`}>
                 <div dangerouslySetInnerHTML={{ __html: message.content.replace(/\n/g, '<br />') }} />
               </div>
             )}
-          </div>
-        </div>
+          </Card>
 
-        {/* Bottom action buttons for all messages */}
-        {!isEditing && (
-          <div className="flex justify-end gap-1 mt-3 pt-2 border-t border-gray-100">
-            <Button
-              variant="ghost"
-              size="sm"
-              onClick={handleCopyText}
-              className="h-8 px-2 text-xs text-gray-600 hover:text-blue-600"
-            >
-              <Copy className="h-3 w-3" />
-            </Button>
-            
-            <Button
-              variant="ghost"
-              size="sm"
-              onClick={handleGeneratePDF}
-              className="h-8 px-2 text-xs text-gray-600 hover:text-blue-600"
-            >
-              <FileDown className="h-3 w-3" />
-            </Button>
-
-            {message.type === 'assistant' && (
-              <>
-                <Button
-                  variant="ghost"
-                  size="sm"
-                  onClick={() => onRegenerateResponse(message.id)}
-                  className="h-8 px-2 text-xs text-gray-600 hover:text-blue-600"
-                >
-                  <RotateCcw className="h-3 w-3" />
-                </Button>
-                
-                <Button
-                  variant="ghost"
-                  size="sm"
-                  onClick={() => handleFeedback('like')}
-                  className={`h-8 px-2 text-xs ${message.feedback === 'like' 
-                    ? 'text-green-600 bg-green-50' 
-                    : 'text-gray-600 hover:text-green-600'
-                  }`}
-                >
-                  <Star className="h-3 w-3" />
-                </Button>
-              </>
-            )}
-
-            {message.type === 'user' && (
+          {/* Action buttons */}
+          {!isEditing && (
+            <div className={`flex gap-1 mt-1 ${message.type === 'user' ? 'justify-end' : 'justify-start'}`}>
               <Button
                 variant="ghost"
                 size="sm"
-                onClick={() => onStartEdit(message.id)}
-                className="h-8 px-2 text-xs text-gray-600 hover:text-blue-600"
+                onClick={handleCopyText}
+                className="h-6 w-6 p-0 text-gray-400 hover:text-blue-600 hover:bg-blue-50"
               >
-                <Pencil className="h-3 w-3" />
+                <Copy className="h-3 w-3" />
               </Button>
-            )}
-          </div>
-        )}
-      </Card>
+              
+              <Button
+                variant="ghost"
+                size="sm"
+                onClick={handleGeneratePDF}
+                className="h-6 w-6 p-0 text-gray-400 hover:text-blue-600 hover:bg-blue-50"
+              >
+                <FileDown className="h-3 w-3" />
+              </Button>
+
+              {message.type === 'assistant' && (
+                <>
+                  <Button
+                    variant="ghost"
+                    size="sm"
+                    onClick={() => onRegenerateResponse(message.id)}
+                    className="h-6 w-6 p-0 text-gray-400 hover:text-blue-600 hover:bg-blue-50"
+                  >
+                    <RotateCcw className="h-3 w-3" />
+                  </Button>
+                  
+                  <Button
+                    variant="ghost"
+                    size="sm"
+                    onClick={() => handleFeedback('like')}
+                    className={`h-6 w-6 p-0 ${message.feedback === 'like' 
+                      ? 'text-green-600 bg-green-50' 
+                      : 'text-gray-400 hover:text-green-600 hover:bg-green-50'
+                    }`}
+                  >
+                    <Star className="h-3 w-3" />
+                  </Button>
+                </>
+              )}
+
+              {message.type === 'user' && (
+                <Button
+                  variant="ghost"
+                  size="sm"
+                  onClick={() => onStartEdit(message.id)}
+                  className="h-6 w-6 p-0 text-gray-400 hover:text-blue-600 hover:bg-blue-50"
+                >
+                  <Pencil className="h-3 w-3" />
+                </Button>
+              )}
+            </div>
+          )}
+        </div>
+      </div>
     </div>
   );
 };
