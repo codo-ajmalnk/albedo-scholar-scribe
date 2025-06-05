@@ -47,6 +47,7 @@ const Index = () => {
     setCurrentChatId,
     createNewChat,
     updateChatMessages,
+    renameChat,
     getCurrentChat,
     deleteChat
   } = useChatHistory();
@@ -56,10 +57,9 @@ const Index = () => {
     const currentChat = getCurrentChat();
     if (currentChat) {
       loadMessages(currentChat.messages);
-    } else if (chatSessions.length === 0) {
-      createNewChat();
     }
-  }, [currentChatId, chatSessions.length]);
+    // Removed auto-creation of new chat to prevent refresh issues
+  }, [currentChatId]);
 
   // Update chat history when messages change
   useEffect(() => {
@@ -90,7 +90,7 @@ const Index = () => {
     editMessage(messageId, newContent);
   };
 
-  // Optimized new chat handler - no animations, immediate response
+  // Optimized new chat handler
   const handleNewChat = () => {
     const newChatId = createNewChat();
     setCurrentChatId(newChatId);
@@ -103,6 +103,10 @@ const Index = () => {
 
   const handleSelectChat = (chatId: string) => {
     setCurrentChatId(chatId);
+  };
+
+  const handleRenameChat = (chatId: string, newTitle: string) => {
+    renameChat(chatId, newTitle);
   };
 
   // Allow access if user is authenticated OR if user is admin
@@ -118,6 +122,7 @@ const Index = () => {
         onNewChat={handleNewChat}
         onSelectChat={handleSelectChat}
         onDeleteChat={deleteChat}
+        onRenameChat={handleRenameChat}
       />
       
       <div className="flex-1 flex flex-col w-full">

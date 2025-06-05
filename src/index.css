@@ -87,11 +87,12 @@
   }
 }
 
-/* Performance optimizations */
+/* Performance optimizations - Remove all shaking animations */
 * {
   -webkit-font-smoothing: antialiased;
   -moz-osx-font-smoothing: grayscale;
   box-sizing: border-box;
+  transform: none !important; /* Prevent any transforms that cause shaking */
 }
 
 .no-select {
@@ -101,18 +102,29 @@
   user-select: none;
 }
 
-/* Remove all problematic animations */
-@media (prefers-reduced-motion: reduce) {
-  *, *::before, *::after {
-    animation-duration: 0.01ms !important;
-    animation-iteration-count: 1 !important;
-    transition-duration: 0.01ms !important;
-  }
+/* Disable all animations and transitions to prevent shaking */
+*, *::before, *::after {
+  animation-duration: 0s !important;
+  animation-iteration-count: 1 !important;
+  transition-duration: 0s !important;
+  transition-delay: 0s !important;
+  transform: none !important;
+  will-change: auto !important;
 }
 
-/* Override any transform or animation properties that might cause shaking */
-* {
-  will-change: auto !important;
+/* Smooth scrolling only */
+html {
+  scroll-behavior: smooth;
+}
+
+/* Button hover effects - minimal and stable */
+button:hover {
+  opacity: 0.9;
+  transform: none !important;
+}
+
+/* Ensure stable positioning */
+.fixed, .absolute, .relative {
   backface-visibility: hidden;
   perspective: 1000px;
 }
