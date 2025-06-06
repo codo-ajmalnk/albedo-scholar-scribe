@@ -1,4 +1,3 @@
-
 import { useState, useEffect } from 'react';
 import ChatHeader from '@/components/ChatHeader';
 import ChatContainer from '@/components/ChatContainer';
@@ -8,6 +7,7 @@ import FlyingLeavesEffect from '@/components/FlyingLeavesEffect';
 import DeepResearchTool from '@/components/DeepResearchTool';
 import UsageIndicator from '@/components/UsageIndicator';
 import WelcomeScreen from '@/components/WelcomeScreen';
+import QuickActionsToolbox from '@/components/QuickActionsToolbox';
 import { useMessageHandling } from '@/hooks/useMessageHandling';
 import { useFileHandling } from '@/hooks/useFileHandling';
 import { useChatHistory } from '@/hooks/useChatHistory';
@@ -120,6 +120,17 @@ const Index = () => {
     renameChat(chatId, newTitle);
   };
 
+  const handleQuickAction = (actionId: string, prompt: string) => {
+    if (!currentChatId) {
+      const newChatId = createNewChat();
+      setCurrentChatId(newChatId);
+    }
+    
+    // Set the input message based on the action
+    setInputMessage(prompt + ' ');
+    setShowWelcome(false);
+  };
+
   // Allow access if user is authenticated OR if user is admin
   if (!user && !isAdmin) {
     return null;
@@ -167,13 +178,13 @@ const Index = () => {
               <div className="w-80 hidden lg:block">
                 <div className="sticky top-4 space-y-4">
                   <div className="border-2 border-blue-200 rounded-lg bg-white/50">
-                    <UsageIndicator />
-                  </div>
-                  <div className="border-2 border-blue-200 rounded-lg bg-white/50">
-                    <DeepResearchTool 
-                      onResearch={handleDeepResearch}
+                    <QuickActionsToolbox 
+                      onActionSelect={handleQuickAction}
                       isLoading={isLoading}
                     />
+                  </div>
+                  <div className="border-2 border-blue-200 rounded-lg bg-white/50">
+                    <UsageIndicator />
                   </div>
                 </div>
               </div>
