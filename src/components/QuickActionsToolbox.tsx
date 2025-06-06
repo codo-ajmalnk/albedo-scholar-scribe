@@ -9,7 +9,6 @@ import {
   Image as ImageIcon, 
   MessageSquare, 
   Sparkles,
-  Mic,
   Calculator,
   BookOpen
 } from 'lucide-react';
@@ -31,7 +30,6 @@ const QuickActionsToolbox = ({ onActionSelect, isLoading = false }: QuickActions
   const actions = [
     {
       id: 'create-image',
-      number: 1,
       icon: ImageIcon,
       label: 'Create image',
       color: 'bg-green-500 hover:bg-green-600',
@@ -41,7 +39,6 @@ const QuickActionsToolbox = ({ onActionSelect, isLoading = false }: QuickActions
     },
     {
       id: 'get-advice',
-      number: 2,
       icon: MessageSquare,
       label: 'Get advice',
       color: 'bg-blue-500 hover:bg-blue-600',
@@ -51,7 +48,6 @@ const QuickActionsToolbox = ({ onActionSelect, isLoading = false }: QuickActions
     },
     {
       id: 'summarize-text',
-      number: 3,
       icon: FileText,
       label: 'Summarize text',
       color: 'bg-orange-500 hover:bg-orange-600',
@@ -61,7 +57,6 @@ const QuickActionsToolbox = ({ onActionSelect, isLoading = false }: QuickActions
     },
     {
       id: 'analyze-photo',
-      number: 4,
       icon: Camera,
       label: 'Analyze photo',
       color: 'bg-purple-500 hover:bg-purple-600',
@@ -71,7 +66,6 @@ const QuickActionsToolbox = ({ onActionSelect, isLoading = false }: QuickActions
     },
     {
       id: 'solve-math',
-      number: 5,
       icon: Calculator,
       label: 'Solve math',
       color: 'bg-indigo-500 hover:bg-indigo-600',
@@ -81,7 +75,6 @@ const QuickActionsToolbox = ({ onActionSelect, isLoading = false }: QuickActions
     },
     {
       id: 'explain-concept',
-      number: 6,
       icon: BookOpen,
       label: 'Explain concept',
       color: 'bg-teal-500 hover:bg-teal-600',
@@ -125,7 +118,7 @@ const QuickActionsToolbox = ({ onActionSelect, isLoading = false }: QuickActions
   };
 
   return (
-    <Card className="p-4 bg-white/90 border-2 border-blue-200 shadow-lg">
+    <Card className="p-4 bg-gradient-to-br from-white/90 via-blue-50/50 to-purple-50/50 border-2 border-blue-200/60 shadow-xl backdrop-blur-sm">
       <div className="text-center mb-4">
         <h3 className="text-lg font-semibold text-gray-800 mb-1">What can I help with?</h3>
         <p className="text-sm text-gray-600">Choose a quick action to get started</p>
@@ -149,11 +142,6 @@ const QuickActionsToolbox = ({ onActionSelect, isLoading = false }: QuickActions
                 hover:shadow-lg active:scale-95 relative
               `}
             >
-              {/* Number badge in top-left corner */}
-              <div className="absolute -top-2 -left-2 bg-white text-gray-800 rounded-full w-6 h-6 flex items-center justify-center text-xs font-bold shadow-md">
-                {action.number}
-              </div>
-              
               <action.icon className={`h-6 w-6 ${isSelected ? 'animate-bounce' : ''}`} />
               <span className="text-sm font-medium">{action.label}</span>
               {!isAdmin && (
@@ -170,7 +158,7 @@ const QuickActionsToolbox = ({ onActionSelect, isLoading = false }: QuickActions
       </div>
 
       {!isAdmin && (
-        <div className="mt-4 p-3 bg-blue-50 rounded-lg border border-blue-200">
+        <div className="mt-4 p-3 bg-gradient-to-r from-blue-50/80 to-purple-50/80 rounded-lg border border-blue-200/60 backdrop-blur-sm">
           <div className="flex items-center justify-between text-sm">
             <span className="text-blue-700 font-medium">Daily Credits</span>
             <div className="flex space-x-4 text-xs text-blue-600">

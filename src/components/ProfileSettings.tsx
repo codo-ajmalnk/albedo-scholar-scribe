@@ -1,3 +1,4 @@
+
 import { useState, useEffect } from 'react';
 import { useUserProfile } from '@/hooks/useUserProfile';
 import { Button } from '@/components/ui/button';
@@ -6,7 +7,7 @@ import { Label } from '@/components/ui/label';
 import { Card, CardContent, CardDescription, CardHeader, CardTitle } from '@/components/ui/card';
 import { Select, SelectContent, SelectItem, SelectTrigger, SelectValue } from '@/components/ui/select';
 import { Tabs, TabsContent, TabsList, TabsTrigger } from '@/components/ui/tabs';
-import { User, Shield, CreditCard, Activity, Lightbulb } from 'lucide-react';
+import { User, Shield, CreditCard, Activity } from 'lucide-react';
 import { useToast } from '@/hooks/use-toast';
 import CreditCards from './CreditCards';
 import UsageIndicator from './UsageIndicator';
@@ -30,7 +31,6 @@ const ProfileSettings = () => {
   });
   const [previousGender, setPreviousGender] = useState<string>('');
   const [previousAlbedoName, setPreviousAlbedoName] = useState<string>('Albedo');
-  const [glowingHeading, setGlowingHeading] = useState('personal');
 
   // Update form data when profile loads
   useEffect(() => {
@@ -47,19 +47,6 @@ const ProfileSettings = () => {
       });
     }
   }, [profile]);
-
-  // Add glow effect cycling
-  useEffect(() => {
-    const headings = ['personal', 'security', 'subscription', 'activity'];
-    let currentIndex = 0;
-    
-    const interval = setInterval(() => {
-      setGlowingHeading(headings[currentIndex]);
-      currentIndex = (currentIndex + 1) % headings.length;
-    }, 2000);
-
-    return () => clearInterval(interval);
-  }, []);
 
   const handleSubmit = async (e: React.FormEvent) => {
     e.preventDefault();
@@ -105,7 +92,7 @@ const ProfileSettings = () => {
 
   if (loading) {
     return (
-      <div className="min-h-screen flex items-center justify-center bg-gradient-to-br from-green-50 via-blue-50 to-purple-50">
+      <div className="min-h-screen flex items-center justify-center bg-gradient-to-br from-blue-50 via-purple-50 to-cyan-50">
         <div className="animate-pulse text-center">
           <AlbedoAvatar size="lg" animated />
           <p className="mt-4 text-gray-700 font-medium">Loading your profile...</p>
@@ -125,52 +112,28 @@ const ProfileSettings = () => {
       </div>
 
       <Tabs defaultValue="personal" className="space-y-6">
-        <TabsList className="grid w-full grid-cols-4 bg-white/80 backdrop-blur-sm border-2 border-gray-200 rounded-lg overflow-hidden">
-          <TabsTrigger 
-            value="personal" 
-            className={`flex items-center space-x-2 transition-all duration-300 ${
-              glowingHeading === 'personal' ? 'bg-yellow-200 shadow-lg shadow-yellow-400/50 animate-pulse' : ''
-            }`}
-          >
-            <User className={`h-4 w-4 ${glowingHeading === 'personal' ? 'text-yellow-600' : 'text-black'}`} />
+        <TabsList className="grid w-full grid-cols-4 bg-gradient-to-r from-blue-100/80 via-purple-100/80 to-cyan-100/80 backdrop-blur-sm border-2 border-blue-200 rounded-lg overflow-hidden">
+          <TabsTrigger value="personal" className="flex items-center space-x-2 transition-all duration-300">
+            <User className="h-4 w-4 text-black" />
             <span className="text-black font-medium">Personal Info</span>
-            {glowingHeading === 'personal' && <Lightbulb className="h-3 w-3 text-yellow-500 animate-ping" />}
           </TabsTrigger>
-          <TabsTrigger 
-            value="security" 
-            className={`flex items-center space-x-2 transition-all duration-300 ${
-              glowingHeading === 'security' ? 'bg-yellow-200 shadow-lg shadow-yellow-400/50 animate-pulse' : ''
-            }`}
-          >
-            <Shield className={`h-4 w-4 ${glowingHeading === 'security' ? 'text-yellow-600' : 'text-black'}`} />
+          <TabsTrigger value="security" className="flex items-center space-x-2 transition-all duration-300">
+            <Shield className="h-4 w-4 text-black" />
             <span className="text-black font-medium">Security</span>
-            {glowingHeading === 'security' && <Lightbulb className="h-3 w-3 text-yellow-500 animate-ping" />}
           </TabsTrigger>
-          <TabsTrigger 
-            value="subscription" 
-            className={`flex items-center space-x-2 transition-all duration-300 ${
-              glowingHeading === 'subscription' ? 'bg-yellow-200 shadow-lg shadow-yellow-400/50 animate-pulse' : ''
-            }`}
-          >
-            <CreditCard className={`h-4 w-4 ${glowingHeading === 'subscription' ? 'text-yellow-600' : 'text-black'}`} />
+          <TabsTrigger value="subscription" className="flex items-center space-x-2 transition-all duration-300">
+            <CreditCard className="h-4 w-4 text-black" />
             <span className="text-black font-medium">Subscription</span>
-            {glowingHeading === 'subscription' && <Lightbulb className="h-3 w-3 text-yellow-500 animate-ping" />}
           </TabsTrigger>
-          <TabsTrigger 
-            value="activity" 
-            className={`flex items-center space-x-2 transition-all duration-300 ${
-              glowingHeading === 'activity' ? 'bg-yellow-200 shadow-lg shadow-yellow-400/50 animate-pulse' : ''
-            }`}
-          >
-            <Activity className={`h-4 w-4 ${glowingHeading === 'activity' ? 'text-yellow-600' : 'text-black'}`} />
+          <TabsTrigger value="activity" className="flex items-center space-x-2 transition-all duration-300">
+            <Activity className="h-4 w-4 text-black" />
             <span className="text-black font-medium">Activity</span>
-            {glowingHeading === 'activity' && <Lightbulb className="h-3 w-3 text-yellow-500 animate-ping" />}
           </TabsTrigger>
         </TabsList>
 
         <TabsContent value="personal">
-          <Card className="bg-gradient-to-br from-white to-gray-50 border-2 border-gray-200 shadow-xl">
-            <CardHeader className="bg-gradient-to-r from-purple-100 to-blue-100 border-b border-gray-200">
+          <Card className="bg-gradient-to-br from-white/90 via-blue-50/50 to-purple-50/50 border-2 border-blue-200 shadow-xl backdrop-blur-sm">
+            <CardHeader className="bg-gradient-to-r from-blue-100/70 to-purple-100/70 border-b border-blue-200">
               <CardTitle className="text-black flex items-center space-x-2">
                 <AlbedoAvatar size="sm" animated />
                 <span>🧑 Personal Information</span>
@@ -285,8 +248,8 @@ const ProfileSettings = () => {
         </TabsContent>
 
         <TabsContent value="security">
-          <Card className="bg-gradient-to-br from-white to-gray-50 border-2 border-gray-200 shadow-xl">
-            <CardHeader className="bg-gradient-to-r from-red-100 to-orange-100 border-b border-gray-200">
+          <Card className="bg-gradient-to-br from-white/90 via-blue-50/50 to-purple-50/50 border-2 border-blue-200 shadow-xl backdrop-blur-sm">
+            <CardHeader className="bg-gradient-to-r from-red-100/70 to-orange-100/70 border-b border-blue-200">
               <CardTitle className="text-black flex items-center space-x-2">
                 <Shield className="h-5 w-5" />
                 <span>🔒 Security & Login</span>
@@ -302,13 +265,13 @@ const ProfileSettings = () => {
         </TabsContent>
 
         <TabsContent value="subscription">
-          <div className="bg-gradient-to-br from-white to-gray-50 rounded-lg border-2 border-gray-200 shadow-xl">
+          <div className="bg-gradient-to-br from-white/90 via-blue-50/50 to-purple-50/50 rounded-lg border-2 border-blue-200 shadow-xl backdrop-blur-sm">
             <CreditCards />
           </div>
         </TabsContent>
 
         <TabsContent value="activity">
-          <div className="bg-gradient-to-br from-white to-gray-50 rounded-lg border-2 border-gray-200 shadow-xl">
+          <div className="bg-gradient-to-br from-white/90 via-blue-50/50 to-purple-50/50 rounded-lg border-2 border-blue-200 shadow-xl backdrop-blur-sm">
             <ActivityPage />
           </div>
         </TabsContent>
