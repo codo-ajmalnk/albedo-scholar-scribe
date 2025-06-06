@@ -46,7 +46,7 @@ const Profile = () => {
         <ProfileSettings />
       </div>
 
-      <style jsx>{`
+      <style>{`
         @keyframes slow-spin {
           from { transform: rotate(0deg); }
           to { transform: rotate(360deg); }
